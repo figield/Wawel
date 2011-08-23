@@ -1,0 +1,46 @@
+{% extends "polls/base.html" %}
+
+{% block javascript %}
+
+   <style>
+            #galleria{height:580px}
+    </style>
+    <script type="text/javascript" src="/static/jquery.js"></script>
+    <script type="text/javascript" src="/static/galleria/galleria-1.2.5.min.js"></script>
+    <link rel="stylesheet" href="/static/css/galleria.classic.css" type="text/css" media="screen" />
+    
+{% endblock %}
+
+{% block main %}
+    <div class="art-PostContent">
+     <div id="galleria">  
+        <img  title="tytuł" alt = "opis zdjęcia" src="/static/images/niepolomice/DSC00554.jpg" />        
+        <img src="/static/images/niepolomice/DSC00557.jpg" />  
+        <img src="/static/images/niepolomice/DSC00562.jpg" />  
+        <img src="/static/images/niepolomice/DSC00566.jpg" /> 
+        <img src="/static/images/niepolomice/DSC00573.jpg" />
+        <img src="/static/images/niepolomice/DSC00559.jpg" />  
+        <img src="/static/images/niepolomice/DSC00563.jpg" />  
+        <img src="/static/images/niepolomice/DSC00567.jpg" />  
+        <img src="/static/images/niepolomice/DSC00574.jpg" />
+        <img src="/static/images/niepolomice/DSC00556.jpg" />  
+        <img src="/static/images/niepolomice/DSC00561.jpg" />  
+        <img src="/static/images/niepolomice/DSC00564.jpg" /> 
+        <img src="/static/images/niepolomice/DSC00570.jpg" />
+        
+    </div>
+    
+    </div>
+    <script>
+
+    // Load the classic theme
+	Galleria.loadTheme('/static/galleria/galleria.classic.min.js');
+
+	// Initialize Galleria
+	$('#galleria').galleria();
+
+    </script> 
+{% endblock %}
+
+
+    

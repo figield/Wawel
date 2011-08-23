@@ -1,0 +1,23 @@
+{% extends "polls/base.html" %}
+
+{% block main %}
+
+{% if all_mesures %}
+    <table>
+    {% for measure in all_mesures %}
+        <tr>
+            <td><a href="/wawel/{{ measure.id }}/">{{ measure.id }}</a></td>
+            <td>{{ measure.Name}}</td>
+            <td>{{ measure.Value}}</td>
+            <td>{{ measure.UnitOfMeasure}}</td>
+            <td>{{ measure.MeasureDate }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No measures are available.</p>
+{% endif %}
+    
+{% endblock %}
+
+
