@@ -1,7 +1,7 @@
 {% extends "polls/base.html" %}
 
 {% block javascript %}
-<script src="/static/prototype.js" type="text/javascript"></script>
+<script src="/site_media/prototype.js" type="text/javascript"></script>
 <script type="text/javascript">
 function update_temp(Id) {
     new Ajax.PeriodicalUpdater('update_temp_'+Id, '/update_temp/'+Id+'/', {
@@ -22,7 +22,7 @@ function update_temp(Id) {
     <div class="art-PostContent">
 		<div align="center">
     
-        <div><img src="/static/images/w9p.jpg" /></div>
+        <div><img src="/site_media/images/w9p.jpg" /></div>
         <div style="position: absolute; left: 4px; top: 50px; color: #fff;">
             Temperatura na zewnątrz<br /> <span style="font-weight: bold;">
             <div id="update_temp_out">
@@ -31,7 +31,7 @@ function update_temp(Id) {
             </span>
         </div>
         <div style="position: absolute; left: 200px; top: 50px;">
-            <img src="/static/images/blink.gif" />
+            <img src="/site_media/images/blink.gif" />
         </div>
         
         <div style="position: absolute; left: 10px; top: 200px; color: #fff;">
@@ -42,7 +42,7 @@ function update_temp(Id) {
             </span>
         </div>
         <div style="position: absolute; left: 500px; top: 200px;">
-            <img src="/static/images/blink.gif" />
+            <img src="/site_media/images/blink.gif" />
         </div>
         
         <div style="position: absolute; right: 15px; top: 50px; color: #fff;">
