@@ -2,53 +2,77 @@ from polls.models import Measure
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.http import Http404
-import datetime 
-import cairo, math, random,  cairoplot
+from datetime import date, datetime
+import math, random
+import cairo
+import cairoplot
 
 # For Ajax requests
 def update_temp(request, id):
     Temps = Measure.objects.filter( UnitOfMeasure = "C", 
                                                 Name = id,  
-                                                MeasureDate__year = datetime.date.today().year
+                                                MeasureDate__year = date.today().year
                                                 ).order_by('MeasureDate')
-    Temp = Temps[len(Temps) -1 ].Value 
-    R = random.randint(-4, 4) * 0.1
-    return render_to_response('polls/temp.html', {id:Temp + R})
+    if len(Temps) == 0:
+        return render_to_response('polls/temp.html', {id:0})
+    else:
+        Temp = Temps[len(Temps) -1 ].Value 
+        R = random.randint(-4, 4) * 0.1
+        return render_to_response('polls/temp.html', {id:Temp + R})
 
 def index(request):
     #TODO: take the last value from the separate record!!!!
     Outs = Measure.objects.filter( UnitOfMeasure = "C", 
-                                                Name = "out",  
-                                                MeasureDate__year = datetime.date.today().year
-                                                ).order_by('MeasureDate')
-    Out = Outs[len(Outs) -1 ].Value
-    
+                                   Name = "out",  
+                                   MeasureDate__year = date.today().year
+                                   ).order_by('MeasureDate')
+
+    if len(Outs) == 0:
+        Out = 0
+    else:
+        Out = Outs[len(Outs) -1 ].Value        
+
     Ins = Measure.objects.filter( UnitOfMeasure = "C", 
-                                                Name = "saloon",  
-                                                MeasureDate__year = datetime.date.today().year
-                                                ).order_by('MeasureDate')
-    In = Ins[len(Ins) -1 ].Value
+                                  Name = "saloon",  
+                                  MeasureDate__year = date.today().year
+                                  ).order_by('MeasureDate')
+    if len(Ins) == 0:
+        In = 0
+    else:
+        In = Ins[len(Ins) -1 ].Value
     
     Elecs = Measure.objects.filter( UnitOfMeasure = "kWh", 
-                                                   Name = "elec",  
-                                                   MeasureDate__year = datetime.date.today().year
-                                                 ).order_by('MeasureDate')
-    Elec = Elecs[len(Elecs) -1 ].Value
+                                    Name = "elec",  
+                                    MeasureDate__year = date.today().year
+                                    ).order_by('MeasureDate')
+    if len(Elecs) == 0:
+        Elec = 0
+    else:
+        Elec = Elecs[len(Elecs) -1 ].Value
 
     Thermals = Measure.objects.filter( UnitOfMeasure = "GJ", 
-                                                         Name = "thermal",  
-                                                         MeasureDate__year = datetime.date.today().year
-                                                        ).order_by('MeasureDate')
-    ThermalGJ = Thermals[len(Thermals) -1 ].Value
+                                       Name = "thermal",  
+                                       MeasureDate__year = date.today().year
+                                       ).order_by('MeasureDate')
+    if len(Thermals) == 0:
+        ThermalGJ = 0
+    else:
+        ThermalGJ = Thermals[len(Thermals) -1 ].Value
+
     # Conversion base : 1 GJ = 277.77777777778 kWh 
     ThermalKWh = round(ThermalGJ * 277.77777777778, 2) 
-    cop = round(ThermalKWh / Elec, 1)
+
+    if Elec == 0:
+        cop = 0
+    else:
+        cop = round(ThermalKWh / Elec, 1)
+
     return render_to_response('polls/index.html', {'out':Out,  
-                                                                                   'saloon':In,  
-                                                                                   'elec':Elec,  
-                                                                                   'thermalgj':ThermalGJ,  
-                                                                                   'thermalkwh':ThermalKWh, 
-                                                                                   'cop':cop})
+                                                   'saloon':In,  
+                                                   'elec':Elec,  
+                                                   'thermalgj':ThermalGJ,  
+                                                   'thermalkwh':ThermalKWh, 
+                                                   'cop':cop})
 
 def photos(request):
     return render_to_response('polls/photos.html', {})
@@ -270,16 +294,26 @@ def handle_value(request):
 
 # Common function for line graphs
 def draw_graph(data,  x_labels,  y_title):
-    heigth = 300
+    height = 300
     width = 800
     background = cairo.LinearGradient(300, 0, 300, 400)
     background.add_color_stop_rgb(0,0,0.4,0)
     #background.add_color_stop_rgb(1.0,0,0.1,0)
-    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width,  heigth)
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width,  height)
     #context = cairo.Context(surface)
-    pp = cairoplot.DotLinePlot(surface, data, width, heigth, background = background, 
-                                            border = 0,  x_labels = x_labels, axis = True, grid = True, 
-                                            dots = True,  y_title = y_title, x_title = "Time", series_legend=True)
+    pp = cairoplot.DotLinePlot(surface = surface,
+                               data = data, 
+                               width = width, 
+                               height = height, 
+                               background = background, 
+                               border = 0,  
+                               x_labels = x_labels, 
+                               axis = True, 
+                               grid = True, 
+                               dots = True,  
+                               y_title = y_title, 
+                               x_title = "Time", 
+                               series_legend=True)
       # dash, y_labels, x_bounds, y_bounds,  series_colors 
     pp.render()
     response = HttpResponse(mimetype="image/png")
@@ -288,17 +322,17 @@ def draw_graph(data,  x_labels,  y_title):
 
 # Common function for bar graphs
 def draw_bar_graph(data,  x_labels, y_labels):
-    heigth = 300
+    height = 300
     width = 800
     background = cairo.LinearGradient(300, 0, 300, 400)
     background.add_color_stop_rgb(0,0,0.4,0)
     #background.add_color_stop_rgb(1.0,0,0.1,0)
-    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width,  heigth)
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width,  height)
     #context = cairo.Context(surface)
     pp = cairoplot.VerticalBarPlot(surface, 
                                                 data, 
                                                 width, 
-                                                heigth, 
+                                                height, 
                                                 background = background, 
                                                 border = 20, 
                                                 display_values = True, 
@@ -322,14 +356,14 @@ def draw_bar_graph(data,  x_labels, y_labels):
 # Examples
 #=====================================================================
 def example1_chart(request,  name):
-    heigth = 600
+    height = 600
     width = 400
     data = { "john" : [-5, -2, 0, 1, 3], "mary" : [0, 0, 3, 5, 2], "philip" : [-2, -3, -4, 2, 1] }
     x_labels = [ "jan/2008", "feb/2008", "mar/2008", "apr/2008", "may/2008" ]
     y_labels = [ "very low", "low", "medium", "high", "very high" ]
-    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, heigth, width)
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, height, width)
     context = cairo.Context(surface)
-    pp=cairoplot.DotLinePlot( surface, data,  heigth, width, x_labels = x_labels, 
+    pp=cairoplot.DotLinePlot( surface, data,  height, width, x_labels = x_labels, 
                              y_labels = y_labels, axis = True, grid = True,
                              x_title = "x axis", y_title = "y axis", series_legend=True )
     pp.render()
