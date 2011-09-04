@@ -17,10 +17,6 @@ body
 	top: 0;
 }
 
-
-
-
-
 #art-page-background-simple-gradient
 {
 	position: absolute;
@@ -1343,3 +1339,14 @@ text-decoration: underline;
 /* end LayoutCell */
 
 
+div.measure
+{
+    color: #000;
+    background-color:#fff;
+    text-align: right;
+    border-style:solid;
+    border-width:2px;
+    padding:3px 3px 3px 3px;
+    width:100px;
+    margin-top: 5px;
+}
