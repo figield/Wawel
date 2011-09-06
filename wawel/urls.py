@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
+
 admin.autodiscover()
 
 urlpatterns = patterns('polls.views',
@@ -9,17 +10,28 @@ urlpatterns = patterns('polls.views',
     (r'^zdjecia/$', 'photos'),
     (r'^allmeasures/$', 'all_measures'),
     (r'^update_temp/(?P<id>\w+)/$', 'update_temp'),
-    (r'^generateChart/(?P<name>\w+)/$', 'yearchart'),
-    (r'^generateTempChart/$', 'yearchart_temp'),
-    (r'^dayreport/(?P<year>\w+)/(?P<month>\w+)/(?P<day>\w+)/$', 'dayreport'),
-    (r'^daychart/(?P<name>\w+)/(?P<year>\w+)/(?P<month>\w+)/(?P<day>\w+)/$', 'daychart'),
-    (r'^dayTempChart/(?P<year>\w+)/(?P<month>\w+)/(?P<day>\w+)/$', 'daychart_temp'),
+    (r'^dayreport/(?P<year>\w+)/(?P<month>\w+)/(?P<day>\w+)/$', 
+     'dayreport'),
     (r'^monthreport/(?P<year>\w+)/(?P<month>\w+)/$', 'monthreport'),
-    (r'^monthchart/(?P<name>\w+)/(?P<year>\w+)/(?P<month>\w+)/$', 'monthchart'),
-    (r'^monthTempChart/(?P<year>\w+)/(?P<month>\w+)/$', 'monthchart_temp'),
-    (r'^monthElecBarChart/(?P<year>\w+)/(?P<month>\w+)/$', 'month_barchart'),
     (r'^pomiar/(?P<measure_id>\d+)/$', 'detail'),
     (r'^insert/$', 'handle_value'),
+)
+
+urlpatterns += patterns('polls.viewsgraphs',
+    (r'^generateChart/(?P<name>\w+)/$', 
+     'yearchart'),
+    (r'^generateTempChart/$', 
+     'yearchart_temp'),
+    (r'^daychart/(?P<name>\w+)/(?P<year>\w+)/(?P<month>\w+)/(?P<day>\w+)/$',
+     'daychart'),
+    (r'^dayTempChart/(?P<year>\w+)/(?P<month>\w+)/(?P<day>\w+)/$', 
+     'daychart_temp'),
+    (r'^monthchart/(?P<name>\w+)/(?P<year>\w+)/(?P<month>\w+)/$', 
+     'monthchart'),
+    (r'^monthTempChart/(?P<year>\w+)/(?P<month>\w+)/$', 
+     'monthchart_temp'),
+    (r'^monthElecBarChart/(?P<year>\w+)/(?P<month>\w+)/$', 
+     'month_barchart')
 )
 
 urlpatterns += patterns('',
