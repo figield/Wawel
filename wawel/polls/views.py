@@ -24,7 +24,6 @@ def index(request):
                                    Name = "out",  
                                    MeasureDate__year = date.today().year
                                    ).order_by('MeasureDate')
-
     if len(Outs) == 0:
         Out = 0
     else:
@@ -56,21 +55,30 @@ def index(request):
         ThermalGJ = 0
     else:
         ThermalGJ = Thermals[len(Thermals) -1 ].Value
-
     # Conversion base : 1 GJ = 277.77777777778 kWh 
     ThermalKWh = round(ThermalGJ * 277.77777777778, 2) 
-
     if Elec == 0:
         cop = 0
     else:
         cop = round(ThermalKWh / Elec, 1)
 
-    return render_to_response('polls/index.html', {'out':Out,  
-                                                   'saloon':In,  
-                                                   'elec':Elec,  
-                                                   'thermalgj':ThermalGJ,  
-                                                   'thermalkwh':ThermalKWh, 
-                                                   'cop':cop})
+
+    # calculate day's costs of electricity usage
+    day_cost = 5.0
+    # calculate month's costs
+    month_cost = 30 * 5.0
+
+    return render_to_response('polls/index.html', 
+                              {'out':Out,  
+                               'saloon':In,  
+                               'elec':Elec,  
+                               'thermalgj':ThermalGJ,  
+                               'thermalkwh':ThermalKWh, 
+                               'cop':cop,
+                               'day_cost':day_cost,
+                               'month_cost':month_cost
+                               })
+
 def photos(request):
     return render_to_response('polls/photos.html', {})
 

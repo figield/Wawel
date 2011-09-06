@@ -20,8 +20,8 @@ function update_temp(Id) {
    </script>
 
     <div class="art-PostContent">
-		<div align="center">
-    
+      <div align="center">
+        
         <div><img src="/site_media/images/dom1.jpg" /></div>
         <div style="position: absolute; left: 4px; top: 50px; color: #fff;">
           Temperatura na zewnątrz
@@ -32,7 +32,7 @@ function update_temp(Id) {
           </div>
         </div>
         <div style="position: absolute; left: 200px; top: 50px;">
-            <img src="/site_media/images/blink.gif" />
+          <img src="/site_media/images/blink.gif" />
         </div>
         
         <div style="position: absolute; left: 10px; top: 280px; color: #fff;">
@@ -44,7 +44,7 @@ function update_temp(Id) {
           </div>
         </div>
         <div style="position: absolute; left: 630px; top: 280px;">
-            <img src="/site_media/images/blink.gif" />
+          <img src="/site_media/images/blink.gif" />
         </div>
         
         <div style="position: absolute; right: 15px; top: 50px; color: #fff;">
@@ -52,27 +52,42 @@ function update_temp(Id) {
             <div class="measure">{{elec}} kWh</div>
         </div>
         <div style="position: absolute; right: 15px; top: 180px; color: #fff;">
-            Energia cieplna
-            <div class="measure">{{thermalgj}} GJ </div>
-            <div class="measure">{{thermalkwh}} kWh</div>
+          Energia cieplna
+          <div class="measure">{{thermalgj}} GJ </div>
+          <div class="measure">{{thermalkwh}} kWh</div>
         </div>
-
-         <div style="position: absolute; right: 15px; top: 320px; color: #fff;">
-            COP  
-            <div class="measure">{{cop}}</div>
-        </div>
-
         
-        </div>
+         <div style="position: absolute; right: 15px; top: 320px; color: #fff;">
+           COP  
+           <div class="measure">{{cop}}</div>
+         </div>
+         
+         
+      </div>
     </div>
     
     <div class="art-PostContent">
-		<div align="left" style="padding-top:30px; padding-bottom:0px; padding-left:30px; padding-right:30px">
-            <span>
+      <div class="wrapper">
 
-            </span>
+        <div class="left">
+          <p> Koszt zużycia energii elektrycznej:</p>
+          <div style="padding-top:10px; 
+                      padding-bottom:0px;
+                      padding-left:150px;">
+            <p><b> Dzienny: {{day_cost}} zł.</b></p>
+            <p><b> Miesięczny: {{month_cost}} zł.</b></p>
+          </div>
         </div>
+
+        <div class="right">
+          <img src="/site_media/images/wawel_service_logo.jpg" 
+               style="padding-right:15px;" />
+          <img src="/site_media/images/viessmann_logo.jpg" />          
+        </div>
+
+      </div>     
     </div>
+
 
 {% endblock %}
 
