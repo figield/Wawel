@@ -4,7 +4,11 @@ from datetime import date, datetime
 import math, random
 import cairo
 import cairoplot
+from django.db.models import Q
 
+# <img src="/generateChart/elec/"/>
+# <img src="/generateChart/thermal/"/>
+# (r'^generateChart/(?P<name>\w+)/$', 'yearchart'),
 def yearchart(request,  name):
     dict = {}
     unit = ""
@@ -52,6 +56,86 @@ def yearchart_temp(request):
                 data[name] = []
             data[name].append(int(V/N))
     return draw_graph(data,  x_labels,  "Degrees Celsius")
+
+def yearchart_temp_in_out(request):
+    (x_labels, data) = generate_data_for_yearchart_temp_in_out()
+    print x_labels
+    print data
+    return draw_graph({'Wewn.':data['saloon'],
+                       'Zewn.':data['out']},  
+                      x_labels,  
+                      "Degrees Celsius")
+
+def generate_data_for_yearchart_temp_in_out():
+    dict = {}
+    for measure in Measure.objects.filter(Q(Name="out") | Q(Name="saloon")):
+        month = measure.MeasureDate.strftime("%Y/%m")
+        DN = dict.get(month)
+        if DN == None:
+            dict[month] = {measure.Name:(measure.Value, 1)}
+        else:
+            VN = DN.get(measure.Name)
+            if VN == None:
+                DN[measure.Name] = (measure.Value, 1)
+            else:
+                (V, N) = VN
+                DN[measure.Name] = (V + measure.Value, N + 1)
+            dict[month] = DN
+    data = {}
+    x_labels = dict.keys()
+    x_labels.sort()
+    for month in x_labels:
+        DN = dict.get(month)
+        for name in DN.keys():
+            (V, N) = DN.get(name)
+            if data.get(name) == None:
+                data[name] = []
+            data[name].append(int(V/N))
+    return (x_labels, data)
+
+def year_barchart(request, year):
+    dict = {}
+    for measure in Measure.objects.filter(Name = 'elec',
+                                          MeasureDate__year = int(year)).order_by('MeasureDate'):
+        month = measure.MeasureDate.strftime("%Y/%m")
+        Tuple = dict.get(month)
+        if Tuple == None:
+            dict[month] = (measure.Value, measure.Value)
+        else:
+            (Min, Max) = Tuple
+            if Min > measure.Value:
+                Min = measure.Value
+            if Max < measure.Value:
+                Max = measure.Value            
+            dict[month] = (Min, Max)
+            
+    dict2 = {}
+    for measure in Measure.objects.filter(Name = 'thermal',
+                                          MeasureDate__year = 
+                                          int(year)).order_by('MeasureDate'):
+        month = measure.MeasureDate.strftime("%Y/%m")
+        Tuple2 = dict2.get(month)
+        if Tuple2 == None:
+            dict2[month] = (measure.Value, measure.Value)
+        else:
+            (Min, Max) = Tuple2
+            if Min > measure.Value:
+                Min = measure.Value
+            if Max < measure.Value:
+                Max = measure.Value            
+            dict2[month] = (Min, Max)
+
+    x_labels = dict.keys()
+    x_labels.sort()
+    data = []
+    for month in x_labels:
+        (Min, Max) = dict.get(month)
+        (Min2, Max2) = dict2.get(month)
+        data.append([int(Max2 - Min2),
+                     # round(int(Max2 - Min2) * 277.77777777778, 2),  
+                     int(Max - Min)])
+    y_labels = None
+    return draw_bar_graph(data, x_labels, y_labels)
 
 def monthchart(request, name, year, month):
     dict = {}
@@ -105,6 +189,38 @@ def monthchart_temp(request, year, month):
             data[name].append(int(V/N))
     return draw_graph(data,  x_labels,  "Degrees Celsius")
 
+def monthchart_temp_in_out(request, year, month):
+    dict = {}
+    for measure in Measure.objects.filter(Q(Name="out") | Q(Name="saloon"), 
+                                          MeasureDate__month = int(month),
+                                          MeasureDate__year = int(year)).order_by('MeasureDate'):
+        time = measure.MeasureDate.strftime("%d")
+        DN = dict.get(time)
+        if DN == None:
+            dict[time] = {measure.Name:(measure.Value, 1)}
+        else:
+            VN = DN.get(measure.Name)
+            if VN == None:
+                DN[measure.Name] = (measure.Value, 1)
+            else:
+                (V, N) = VN
+                DN[measure.Name] = (V + measure.Value, N + 1)
+            dict[time] = DN
+    data = {}
+    x_labels = dict.keys()
+    x_labels.sort()
+    for time in x_labels:
+        DN = dict.get(time)
+        for name in DN.keys():
+            (V, N) = DN.get(name)
+            if data.get(name) == None:
+                data[name] = []
+            data[name].append(int(V/N))
+    return draw_graph({'Wewn.':data['saloon'],
+                       'Zewn.':data['out']},
+                      x_labels,
+                      "Degrees Celsius")
+
 def month_barchart(request, year, month):
     dict = {}
     for measure in Measure.objects.filter(Name = 'elec',
@@ -140,17 +256,23 @@ def month_barchart(request, year, month):
                 Max = measure.Value            
             dict2[day] = (Min, Max)
 
-    data = {}
     x_labels = dict.keys()
     x_labels.sort()
     data = []
     for day in x_labels:
         (Min, Max) = dict.get(day)
         (Min2, Max2) = dict2.get(day)
-        data.append([int(Max2 - Min2),  int(Max - Min)])
+        data.append([int(Max2 - Min2),
+                     #round(int(Max2 - Min2) * 277.77777777778, 2),
+                     int(Max - Min)])
     y_labels = None
     return draw_bar_graph(data, x_labels, y_labels)
 
+
+# <img src="/daychart/elec/{{ year }}/{{ month }}/{{ day }}/">
+# <img src="/daychart/thermal/{{ year }}/{{ month }}/{{ day }}/">
+# (r'^daychart/(?P<name>\w+)/(?P<year>\w+)/(?P<month>\w+)/(?P<day>\w+)/$',
+#    'daychart'),
 def daychart(request, name, year, month, day):
     data = {}
     x_labels = []

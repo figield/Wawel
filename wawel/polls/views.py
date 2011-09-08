@@ -1,8 +1,12 @@
-from polls.models import Measure
-from django.http import HttpResponse
+from polls.models import Measure, MeasureMonth
+from django.core.context_processors import csrf
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.http import Http404
+from django.template import RequestContext
 from datetime import date, datetime
+from customclasses import Cost
+from viewsgraphs import generate_data_for_yearchart_temp_in_out
 import random
 
 # For Ajax requests
@@ -62,7 +66,6 @@ def index(request):
     else:
         cop = round(ThermalKWh / Elec, 1)
 
-
     # calculate day's costs of electricity usage
     day_cost = 5.0
     # calculate month's costs
@@ -94,34 +97,45 @@ def monthreport(request, year,  month):
                                           MeasureDate__year = int(year)).order_by('MeasureDate'):
         Date = measure.MeasureDate.strftime("%Y/%m/%d")
         if Date not in days:
-            days.append(Date)    
+            days.append(Date)
+
     return render_to_response('polls/monthreport.html', 
                               {'year':year,  
                                'month':month,
-                               'days':days})
+                               'days':days},
+                              context_instance=RequestContext(request))
 
 def yearreport(request):
-    months = []
-    for measure in Measure.objects.all():  #TODO: to trzeba przyspieszyc
-        Date = measure.MeasureDate.strftime("%Y/%m")
-        if Date not in months:
-            months.append(Date)    
+    months = MeasureMonth.objects.all()
     return render_to_response('polls/yearreport.html', 
-                              {'months':months})
+                              {'months':months, 'year':date.today().year},
+                              context_instance=RequestContext(request))
 
-#TODO: pomiary trzeba podzielic na podstrony
-def all_measures(request):
-    all_mesures = Measure.objects.all().order_by('MeasureDate')
-    return render_to_response('polls/all_measures.html', 
-                              {'all_mesures': all_mesures})
+def yearreport2(request):
+    months = MeasureMonth.objects.all()
+    (x_labels, dataDict) = generate_data_for_yearchart_temp_in_out()
+    TempsIn = dataDict['saloon']
+    TempsOut = dataDict['out']
+    data = []
+    for (x_label, TempOut, TempIn) in zip(x_labels, TempsOut, TempsIn):
+        data.append([x_label, TempOut, TempIn])
+    print data
+    return render_to_response('polls/yearreport2.html', 
+                              {'months':months, 
+                               'data':data},
+                              context_instance=RequestContext(request))
 
-def detail(request, measure_id):
-    try:
-        measure = Measure.objects.get(pk=measure_id)
-    except Measure.DoesNotExist:
-        raise Http404
-    #p = get_object_or_404(Measure, pk=poll_id)
-    return render_to_response('polls/detail.html', {'measure': measure})
+def selectmonth(request):
+    Month = "2011/12"
+    if request.method == 'POST':
+        Month = request.POST['selectmonth']
+    return HttpResponseRedirect('/monthreport/'+ Month +'/') 
+
+def selectday(request):
+    Day = "2011/12/01"
+    if request.method == 'POST':
+        Day = request.POST['selectday']
+    return HttpResponseRedirect('/dayreport/'+ Day +'/') 
 
 #TODO: keep the last values for each measure in the separate record!!!
 #TODO: validate data
@@ -137,9 +151,74 @@ def handle_value(request):
     min = int(request.GET['min'])
     sec = int(request.GET['sec'])    
     measureDate = datetime(year,  month,  day,  hour,  min,  sec)
-    measure =  Measure(Name = name,  
-                       Value = value, 
-                       MeasureDate = measureDate, 
-                       UnitOfMeasure = unitOfMeasure)
+    measure = Measure(Name = name,  
+                      Value = value, 
+                      MeasureDate = measureDate, 
+                      UnitOfMeasure = unitOfMeasure)
     measure.save()
+    
+    date = measure.MeasureDate.strftime("%Y/%m")
+    measureMonths = MeasureMonth.objects.filter(Month = date)
+    if len(MeasureMonths) == 0:
+        measureMonth = MeasureMonth(Month = date)
+        measureMonth.save()
+
     return render_to_response('polls/insert.html', {'measure':measure})
+
+def costs(request):
+
+    ydict = {}
+    mdict = {}
+    All = Measure.objects.filter(Name = 'elec').order_by('MeasureDate')
+    for measure in All:
+
+        year = measure.MeasureDate.strftime("%Y")
+        YTuple = ydict.get(year)
+        if YTuple == None:
+            ydict[year] = (measure.Value, measure.Value)
+        else:
+            (Min, Max) = YTuple
+            if Min > measure.Value:
+                Min = measure.Value
+            if Max < measure.Value:
+                Max = measure.Value            
+            ydict[year] = (Min, Max)
+
+        month = measure.MeasureDate.strftime("%Y/%m")
+        MTuple = mdict.get(month)
+        if MTuple == None:
+            mdict[month] = (measure.Value, measure.Value)
+        else:
+            (MMin, MMax) = MTuple
+            if MMin > measure.Value:
+                MMin = measure.Value
+            if MMax < measure.Value:
+                MMax = measure.Value            
+            mdict[month] = (MMin, MMax)
+    
+    CostPerkWh = 0.55
+    y_keys = ydict.keys()
+    y_keys.sort()
+    Yearscosts = []
+    for y_key in y_keys:
+        (YMin, YMax) = ydict.get(y_key)
+        YUsage = int(YMax - YMin)
+        Yearscosts.append(Cost(y_key,
+                               YUsage,
+                               round(YUsage * CostPerkWh, 2)))
+    m_keys = mdict.keys()
+    m_keys.sort()
+    Monthscosts = []
+    for m_key in m_keys:
+        (MMin, MMax) = mdict.get(m_key)
+        MUsage = int(MMax - MMin)
+        Monthscosts.append(Cost(m_key,
+                                MUsage,
+                                round(MUsage * CostPerkWh, 2)))
+
+    return render_to_response('polls/costs.html', 
+                              {'yearscosts':Yearscosts,
+                               'monthscosts':Monthscosts})
+
+def contact(request):            
+    return render_to_response('polls/contact.html', {})

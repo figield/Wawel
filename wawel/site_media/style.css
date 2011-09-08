@@ -1370,9 +1370,53 @@ div.right {
     float: right;
 }
 
+
+div.tableleft {
+    width: 50%;
+    heigth: 100%;
+    position: relative;
+    float: left;
+}
+
+div.tableright {
+    width: 50%;
+    heigth: 100%;
+    position: relative;
+    float: right;
+}
+
 div.wrapper {
     width: 100%;
     position: relative;
     clear: both;
     padding-top:20px;
+}
+
+table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size:12px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}
+table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+    text-align:center;
+}
+table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+    text-align:center;
+}
+
+table.gridtable a {
+    color: #000000;
 }

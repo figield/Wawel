@@ -1,0 +1,76 @@
+{% extends "polls/base.html" %}
+
+
+{% block main %}
+
+    <div class="art-PostMetadataHeader">
+        <h2 class="art-PostHeader">
+               Koszty zużycia energii elektrycznej
+        </h2>
+    </div>
+
+
+    <div class="art-PostContent">
+      <div align="center">
+        
+        <div class="wrapper">
+
+          <div class="tableleft">
+
+            <p style="padding-top: 20px;
+                      padding-left: 50px;
+                      padding-bottom: 20px;">
+Założono, że 1 kWh w przypadku standardowej taryfy kosztuje 0,55 PLN. W skład tej kwoty wchodzi koszt energii elektrycznej (0,24 PLN), opłata systemowa zmienna (0,09 PLN) oraz opłata sieciowa zmienna (0,22 PLN).
+            </p>
+
+
+            <table class="gridtable">
+              <tr>
+                <th>Rok</th>
+                <th>Zużyta energia (kWh)</th>
+                <th>Koszty (PLN)</th>
+              </tr>
+              {% for yearcost in yearscosts %}
+              <tr>
+                <td>
+                  <a href="/yearreport/">
+                    <b>{{ yearcost.period }}<b></a>
+                </td>
+                <td>{{ yearcost.usage }}</td>
+                <td>{{ yearcost.cost }}</td>
+              </tr>
+              {% endfor %}
+              
+            </table>
+          </div>
+
+          <div class="tableright">
+            <table class="gridtable">
+              <tr>
+                <th>Miesiąc</th>
+                <th>Zużyta energia (kWh)</th>
+                <th>Koszty (PLN)</th>
+              </tr>
+              {% for monthcost in monthscosts %}
+              <tr>
+                <td>
+                  <a href="/monthreport/{{ monthcost.period }}/">
+                    <b>{{ monthcost.period }}<b></a>
+                </td>
+                <td>{{ monthcost.usage }}</td>
+                <td>{{ monthcost.cost }}</td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+          
+        </div>     
+
+
+      </div>
+    </div>
+   
+{% endblock %}
+
+
+    

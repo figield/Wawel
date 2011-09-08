@@ -22,7 +22,10 @@ function update_temp(Id) {
     <div class="art-PostContent">
       <div align="center">
         
-        <div><img src="/site_media/images/dom1.jpg" /></div>
+        <div><img style="padding:1px;
+                         border:1px solid #B5B8AD;
+                         background-color:#000000;" 
+                  src="/site_media/images/dom1.jpg" /></div>
         <div style="position: absolute; left: 4px; top: 50px; color: #fff;">
           Temperatura na zewnątrz
           <div class="measure">
@@ -31,6 +34,7 @@ function update_temp(Id) {
             </div>
           </div>
         </div>
+        
         <div style="position: absolute; left: 200px; top: 50px;">
           <img src="/site_media/images/blink.gif" />
         </div>
@@ -48,8 +52,8 @@ function update_temp(Id) {
         </div>
         
         <div style="position: absolute; right: 15px; top: 50px; color: #fff;">
-            Energia elektryczna
-            <div class="measure">{{elec}} kWh</div>
+          Energia elektryczna
+          <div class="measure">{{elec}} kWh</div>
         </div>
         <div style="position: absolute; right: 15px; top: 180px; color: #fff;">
           Energia cieplna

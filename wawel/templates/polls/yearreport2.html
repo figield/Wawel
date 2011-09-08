@@ -1,0 +1,76 @@
+{% extends "polls/base.html" %}
+
+
+{% block javascript %}
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Year');
+        data.addColumn('number', 'Temp. na zewnątrz');
+        data.addColumn('number', 'Temp. wewnątrz');
+        data.addRows(
+      {% autoescape off %}
+           {{ data }}
+      {% endautoescape %}
+      );
+        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+        chart.draw(data, 
+                   {width: 750, 
+                    height: 420, 
+                    title: 'Średnia teperatura w kolejnych miesiącach pomiarów',
+                    hAxis: {title: 'Czas', 
+                            titleTextStyle: {color: '#FF0000'}}});
+      }
+
+ </script>
+
+{% endblock %}
+
+{% block main %}
+
+    <div class="art-PostMetadataHeader">
+        <h2 class="art-PostHeader">
+               Statystyki graficzne
+        </h2>
+    </div>
+
+    <div class="art-PostContent">
+
+
+      <div style="padding-top:20px;
+                  padding-bottom:20px;" 
+           align="center" 
+           id="chart_div"> </div>
+
+
+      <div class="left">
+        Wybierz miesiąc:
+        <p>
+          {% if months %}
+          <form action="/selectmonth/" method="post">
+            {% csrf_token %}
+            <select name="selectmonth">
+              {% for month in months %}
+              <option value="{{month}}">{{month}}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" 
+                   value="Pokaż wykresy" />
+          </form>                               
+          {% else %}
+        <p> Baza pomiarów jest pusta.</p>
+        {% endif %}
+
+        </p>
+      </div>
+    </div>
+    
+{% endblock %}
+
+
+    

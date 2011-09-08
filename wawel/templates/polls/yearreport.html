@@ -1,43 +1,47 @@
 {% extends "polls/base.html" %}
 
+
 {% block main %}
 
     <div class="art-PostMetadataHeader">
         <h2 class="art-PostHeader">
-                                                Raport roczny
+               Statystyki graficzne
         </h2>
     </div>
 
     <div class="art-PostContent">
-		<div align="center">
-		
+      <div align="center">	
         <br />
         <br />
-        <img src="/generateChart/elec/"/>
-        <img src="/generateChart/thermal/"/>
-        <img src="/generateTempChart/"/>
+        <img src="/generateTempChart/"/> 
         <br />
         <br />
-        </div>
+        <img src="/yearElecBarChart/{{ year }}/"> 
+        <br />
+        <br />
+      </div>
 
- {% if months %}
-    <table>
-    {% for month in months %}
-        <tr>
-            <td><a href="/monthreport/{{month}}/">{{month}}</a></td>
-        </tr>
-    {% endfor %}
-    </table>
-{% else %}
-    <p>No measures are available.</p>
-{% endif %}
-
-<br />
-<a href="/allmeasures/">All measures</a><br />
- 
- 
- </div>
- 
+      <div class="left">
+        Wybierz miesiąc:
+        <p>
+          {% if months %}
+          <form action="/selectmonth/" method="post">
+            {% csrf_token %}
+            <select name="selectmonth">
+              {% for month in months %}
+              <option value="{{month}}">{{month}}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" 
+                   value="Pokaż wykresy" />
+          </form>                               
+          {% else %}
+        <p> Baza pomiarów jest pusta.</p>
+        {% endif %}
+        </p>
+      </div>
+    </div>
+    
 {% endblock %}
 
 
