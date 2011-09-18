@@ -18,7 +18,8 @@
           <div class="tableleft">
 
             <p style="padding-top: 20px;
-                      padding-left: 50px;
+                      padding-left: 30px;
+                      padding-right: 30px;
                       padding-bottom: 20px;">
 Założono, że 1 kWh w przypadku standardowej taryfy kosztuje 0,55 PLN. W skład tej kwoty wchodzi koszt energii elektrycznej (0,24 PLN), opłata systemowa zmienna (0,09 PLN) oraz opłata sieciowa zmienna (0,22 PLN).
             </p>
@@ -26,18 +27,35 @@ Założono, że 1 kWh w przypadku standardowej taryfy kosztuje 0,55 PLN. W skła
 
             <table class="gridtable">
               <tr>
-                <th>Rok</th>
-                <th>Zużyta energia (kWh)</th>
-                <th>Koszty (PLN)</th>
+                <th rowspan="2">Rok</th>
+                <th rowspan="2">Zużyta energia<br/> (kWh)</th>
+                <th rowspan="2">Koszty<br/> (PLN)</th>
+                <th colspan="2"> Wykresy</th>
               </tr>
+              <tr>
+                <th>Przebieg temp.</th>
+                <th>Zurzycie energii</th>
+              </tr>
+
               {% for yearcost in yearscosts %}
               <tr>
+                <td><b>{{ yearcost.period }}<b></td>
+                <td>{{ yearcost.usage }}</td>
+                <td>{{ yearcost.cost }}</td>
                 <td>
                   <a href="/yearreport/">
                     <b>{{ yearcost.period }}<b></a>
+                  <a href="/yearreport/">
+                    <img src="/site_media/images/chart_line.png">
+                  </a>
                 </td>
-                <td>{{ yearcost.usage }}</td>
-                <td>{{ yearcost.cost }}</td>
+                <td>
+                  <a href="/yearreport/">
+                    <b>{{ yearcost.period }}<b></a>
+                  <a href="/yearreport/">
+                    <img src="/site_media/images/chart_bar.png">
+                  </a>
+                </td>
               </tr>
               {% endfor %}
               
@@ -47,18 +65,34 @@ Założono, że 1 kWh w przypadku standardowej taryfy kosztuje 0,55 PLN. W skła
           <div class="tableright">
             <table class="gridtable">
               <tr>
-                <th>Miesiąc</th>
-                <th>Zużyta energia (kWh)</th>
-                <th>Koszty (PLN)</th>
+                <th rowspan="2">Miesiąc</th>
+                <th rowspan="2">Zużyta energia<br/> (kWh)</th>
+                <th rowspan="2">Koszty<br/> (PLN)</th>
+                <th colspan="2"> Wykresy</th>
+              </tr>
+              <tr>
+                <th>Przebieg temp.</th>
+                <th>Zurzycie energii</th>
               </tr>
               {% for monthcost in monthscosts %}
               <tr>
+                <td><b>{{ monthcost.period }}<b></td>
+                <td>{{ monthcost.usage }}</td>
+                <td>{{ monthcost.cost }}</td>
                 <td>
                   <a href="/monthreport/{{ monthcost.period }}/">
                     <b>{{ monthcost.period }}<b></a>
+                  <a href="/monthreport/{{ monthcost.period }}/">
+                    <img src="/site_media/images/chart_line.png">
+                  </a>
                 </td>
-                <td>{{ monthcost.usage }}</td>
-                <td>{{ monthcost.cost }}</td>
+                <td>
+                  <a href="/monthreport/{{ monthcost.period }}/">
+                    <b>{{ monthcost.period }}<b></a>
+                  <a href="/monthreport/{{ monthcost.period }}/">
+                    <img src="/site_media/images/chart_bar.png">
+                  </a>
+                </td>
               </tr>
               {% endfor %}
             </table>
