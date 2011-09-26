@@ -1,0 +1,45 @@
+{% extends "polls/base.html" %}
+
+{% block main %}
+
+    <div class="art-PostMetadataHeader">
+        <h2 class="art-PostHeader">
+         Wykres pomiaru temperatury w ciagu miesiąca
+        </h2>
+    </div>
+
+    <div class="art-PostContent">
+      <div align="center">
+	
+        <br />
+        <br />
+        <p>{{ year }}/{{ month }}</p>
+        <br />
+        <br />
+        <img src="/monthTempChart/{{ year }}/{{ month }}/"> 
+        <br />
+        <br />
+      </div>
+      
+      <div class="left">
+        Wybierz dzień:
+        <p>
+          {% if days %}
+          <form action="/selectday/" method="post">
+            {% csrf_token %}
+            <select name="selectday">
+              {% for day in days %}
+              <option value="{{day}}">{{day}}</option>
+              {% endfor %}
+            </select>
+            <input type="submit"
+                   value="Pokaż wykresy" />
+          </form>                               
+          {% else %}
+        <p> Baza pomiarów jest pusta.</p>
+        {% endif %}
+        </p>
+      </div>
+     
+    </div>
+{% endblock %}

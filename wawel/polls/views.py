@@ -1,4 +1,4 @@
-from polls.models import Measure, MeasureMonth
+from polls.models import Measure, LastMeasure, MeasureMonth
 from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
@@ -11,10 +11,10 @@ import random
 
 # For Ajax requests
 def update_temp(request, id):
-    Temps = Measure.objects.filter( UnitOfMeasure = "C", 
-                                    Name = id,  
-                                    MeasureDate__year = date.today().year
-                                    ).order_by('MeasureDate')
+    Temps = LastMeasure.objects.filter( UnitOfMeasure = "C", 
+                                        Name = id,  
+                                        MeasureDate__year = date.today().year
+                                        ).order_by('MeasureDate')
     if len(Temps) == 0:
         return render_to_response('polls/temp.html', {id:0})
     else:
@@ -23,20 +23,19 @@ def update_temp(request, id):
         return render_to_response('polls/temp.html', {id:Temp + R})
 
 def index(request):
-    #TODO: take the last value from the separate record!!!!
-    Outs = Measure.objects.filter( UnitOfMeasure = "C", 
-                                   Name = "out",  
-                                   MeasureDate__year = date.today().year
-                                   ).order_by('MeasureDate')
+    Outs = LastMeasure.objects.filter( UnitOfMeasure = "C", 
+                                       Name = "out",  
+                                       MeasureDate__year = date.today().year
+                                       ).order_by('MeasureDate')
     if len(Outs) == 0:
         Out = 0
     else:
         Out = Outs[len(Outs) -1 ].Value        
 
-    Ins = Measure.objects.filter( UnitOfMeasure = "C", 
-                                  Name = "saloon",  
-                                  MeasureDate__year = date.today().year
-                                  ).order_by('MeasureDate')
+    Ins = LastMeasure.objects.filter( UnitOfMeasure = "C", 
+                                      Name = "saloon",  
+                                      MeasureDate__year = date.today().year
+                                      ).order_by('MeasureDate')
     if len(Ins) == 0:
         In = 0
     else:
@@ -51,10 +50,10 @@ def index(request):
     else:
         Elec = Elecs[len(Elecs) -1 ].Value
 
-    Thermals = Measure.objects.filter( UnitOfMeasure = "GJ", 
-                                       Name = "thermal",  
-                                       MeasureDate__year = date.today().year
-                                       ).order_by('MeasureDate')
+    Thermals = LastMeasure.objects.filter( UnitOfMeasure = "GJ", 
+                                           Name = "thermal",  
+                                           MeasureDate__year = date.today().year
+                                           ).order_by('MeasureDate')
     if len(Thermals) == 0:
         ThermalGJ = 0
     else:
@@ -64,11 +63,11 @@ def index(request):
     if Elec == 0:
         cop = 0
     else:
-        cop = round(ThermalKWh / Elec, 1)
+        cop = round(ThermalKWh / Elec, 3)
 
-    # calculate day's costs of electricity usage
+    # TODO: calculate day's costs of electricity usage
     day_cost = 5.0
-    # calculate month's costs
+    # TODO: calculate month's costs
     month_cost = 30 * 5.0
 
     return render_to_response('polls/index.html', 
@@ -91,7 +90,7 @@ def dayreport(request, year,  month, day):
                                'month':month,
                                'day':day})
 
-def monthreport(request, year,  month):
+def monthreport(request, year, month):
     days = []
     for measure in Measure.objects.filter(MeasureDate__month = int(month),
                                           MeasureDate__year = int(year)).order_by('MeasureDate'):
@@ -105,21 +104,68 @@ def monthreport(request, year,  month):
                                'days':days},
                               context_instance=RequestContext(request))
 
+def monthtemp(request, year, month):
+    days = []
+    for measure in Measure.objects.filter(MeasureDate__month = int(month),
+                                          MeasureDate__year = int(year)).order_by('MeasureDate'):
+        Date = measure.MeasureDate.strftime("%Y/%m/%d")
+        if Date not in days:
+            days.append(Date)
+
+    return render_to_response('polls/monthtemp.html', 
+                              {'year':year,  
+                               'month':month,
+                               'days':days},
+                              context_instance=RequestContext(request))
+
+def monthenergy(request, year,  month):
+    days = []
+    for measure in Measure.objects.filter(MeasureDate__month = int(month),
+                                          MeasureDate__year = int(year)).order_by('MeasureDate'):
+        Date = measure.MeasureDate.strftime("%Y/%m/%d")
+        if Date not in days:
+            days.append(Date)
+
+    return render_to_response('polls/monthenergy.html', 
+                              {'year':year,  
+                               'month':month,
+                               'days':days},
+                              context_instance=RequestContext(request))
+
 def yearreport(request):
     months = MeasureMonth.objects.all()
     return render_to_response('polls/yearreport.html', 
                               {'months':months, 'year':date.today().year},
                               context_instance=RequestContext(request))
 
+def yeartemp(request):
+    months = MeasureMonth.objects.all()
+    return render_to_response('polls/yeartemp.html', 
+                              {'months':months, 'year':date.today().year},
+                              context_instance=RequestContext(request))
+
+def yearenergy(request):
+    months = MeasureMonth.objects.all()
+    return render_to_response('polls/yearenergy.html', 
+                              {'months':months, 'year':date.today().year},
+                              context_instance=RequestContext(request))
+
 def yearreport2(request):
     months = MeasureMonth.objects.all()
     (x_labels, dataDict) = generate_data_for_yearchart_temp_in_out()
-    TempsIn = dataDict['saloon']
-    TempsOut = dataDict['out']
+
+    TempsIn = dataDict.get('saloon')
+    if TempsIn == None:
+        TempsIn = []
+
+    TempsOut = dataDict.get('out')
+    if TempsOut == None:
+        TempsOut = []
+
     data = []
     for (x_label, TempOut, TempIn) in zip(x_labels, TempsOut, TempsIn):
         data.append([x_label, TempOut, TempIn])
-    print data
+    #print data
     return render_to_response('polls/yearreport2.html', 
                               {'months':months, 
                                'data':data},
@@ -137,7 +183,6 @@ def selectday(request):
         Day = request.POST['selectday']
     return HttpResponseRedirect('/dayreport/'+ Day +'/') 
 
-#TODO: keep the last values for each measure in the separate record!!!
 #TODO: validate data
 #TODO: store input in logs!
 def handle_value(request):
@@ -149,17 +194,28 @@ def handle_value(request):
     day = int(request.GET['day'])
     hour = int(request.GET['hour'])
     min = int(request.GET['min'])
-    sec = int(request.GET['sec'])    
+    sec = 0
     measureDate = datetime(year,  month,  day,  hour,  min,  sec)
     measure = Measure(Name = name,  
                       Value = value, 
                       MeasureDate = measureDate, 
                       UnitOfMeasure = unitOfMeasure)
     measure.save()
-    
+
+    lastMeasures = LastMeasure.objects.filter(UnitOfMeasure = unitOfMeasure, 
+                                             Name = name)
+    if len(lastMeasures) > 0:
+        lastMeasures[0].delete()
+
+    lastMeasure = LastMeasure(Name = name,  
+                              Value = value, 
+                              MeasureDate = measureDate, 
+                              UnitOfMeasure = unitOfMeasure)
+    lastMeasure.save()
+
     date = measure.MeasureDate.strftime("%Y/%m")
-    measureMonths = MeasureMonth.objects.filter(Month = date)
-    if len(MeasureMonths) == 0:
+    measureMonths = MeasureMonth.objects.filter(Month = date) 
+    if len(measureMonths) == 0:
         measureMonth = MeasureMonth(Month = date)
         measureMonth.save()
 
