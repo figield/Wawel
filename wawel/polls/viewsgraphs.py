@@ -131,8 +131,8 @@ def year_barchart(request, year):
     for month in x_labels:
         (Min, Max) = dict.get(month)
         (Min2, Max2) = dict2.get(month)
-        data.append([int(Max2 - Min2),
-                     # round(int(Max2 - Min2) * 277.77777777778, 2),  
+        data.append([#int(Max2 - Min2),
+                     int((Max2 - Min2) * 277.77777777778),  
                      int(Max - Min)])
     y_labels = None
     return draw_bar_graph(data, x_labels, y_labels)
@@ -262,8 +262,8 @@ def month_barchart(request, year, month):
     for day in x_labels:
         (Min, Max) = dict.get(day)
         (Min2, Max2) = dict2.get(day)
-        data.append([int(Max2 - Min2),
-                     #round(int(Max2 - Min2) * 277.77777777778, 2),
+        data.append([#int(Max2 - Min2),
+                     int((Max2 - Min2) * 277.77777777778),
                      int(Max - Min)])
     y_labels = None
     return draw_bar_graph(data, x_labels, y_labels)
@@ -357,7 +357,7 @@ def draw_bar_graph(data,  x_labels, y_labels):
                                    rounded_corners = False,
                                    stack = False,
                                    three_dimension = False,
-                                   series_labels = ['Energia cieplna [GJ]',
+                                   series_labels = ['Energia cieplna [kWh]',
                                                     'Energia elektryczna [kWh]'],
                                    x_labels = x_labels, 
                                    y_labels = y_labels,
