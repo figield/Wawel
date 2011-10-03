@@ -201,6 +201,7 @@ def handle_value(request):
                       Value = value, 
                       MeasureDate = measureDate, 
                       UnitOfMeasure = unitOfMeasure)
+
     if value < -100:
         return render_to_response('polls/insert.html', {'measure':measure})
 
