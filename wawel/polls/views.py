@@ -192,9 +192,9 @@ def handle_value(request):
 
     measureDate = datetime(year,  month,  day,  hour,  min,  sec)
 
-    if name = "temp_3":
+    if name == "temp_3":
         name = "in"
-    elif name = "temp_2":
+    elif name == "temp_2":
         name = "out"
 
     measure = Measure(Name = name,  
