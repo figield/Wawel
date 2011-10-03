@@ -195,11 +195,15 @@ def handle_value(request):
     hour = int(request.GET['hour'])
     min = int(request.GET['min'])
     sec = 0
+
     measureDate = datetime(year,  month,  day,  hour,  min,  sec)
     measure = Measure(Name = name,  
                       Value = value, 
                       MeasureDate = measureDate, 
                       UnitOfMeasure = unitOfMeasure)
+    if value < -100:
+        return render_to_response('polls/insert.html', {'measure':measure})
+
     measure.save()
 
     lastMeasures = LastMeasure.objects.filter(UnitOfMeasure = unitOfMeasure, 
