@@ -45,16 +45,16 @@ Założono, że 1 kWh w przypadku standardowej taryfy kosztuje 0,55 PLN. W skła
                   <td>{{ yearcost.usage }}</td>
                   <td>{{ yearcost.cost }}</td>
                   <td>
-                    <a href="/yeartemp/">
+                    <a href="/yeartemp/{{ yearcost.period }}/">
                       <b>{{ yearcost.period }}<b></a>
-                    <a href="/yeartemp/">
+                    <a href="/yeartemp/{{ yearcost.period }}/">
                       <img src="/site_media/images/chart_line.png">
                     </a>
                   </td>
                   <td>
-                    <a href="/yearenergy/">
+                    <a href="/yearenergy/{{ yearcost.period }}/">
                     <b>{{ yearcost.period }}<b></a>
-                    <a href="/yearenergy/">
+                    <a href="/yearenergy/{{ yearcost.period }}/">
                       <img src="/site_media/images/chart_bar.png">
                     </a>
                   </td>

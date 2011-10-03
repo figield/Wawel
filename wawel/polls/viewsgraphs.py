@@ -58,17 +58,18 @@ def yearchart_temp(request):
     return draw_graph(data,  x_labels,  "Degrees Celsius")
 
 def yearchart_temp_in_out(request):
-    (x_labels, data) = generate_data_for_yearchart_temp_in_out()
+    (x_labels, data) = generate_data_for_yearchart_temp_in_out("2011")
     print x_labels
     print data
-    return draw_graph({'Wewn.':data['saloon'],
+    return draw_graph({'Wewn.':data['in'],
                        'Zewn.':data['out']},  
                       x_labels,  
                       "Degrees Celsius")
 
-def generate_data_for_yearchart_temp_in_out():
+def generate_data_for_yearchart_temp_in_out(year):
     dict = {}
-    for measure in Measure.objects.filter(Q(Name="out") | Q(Name="saloon")):
+    for measure in Measure.objects.filter(Q(Name="out") | Q(Name="in"),
+                                          MeasureDate__year = int(year)).order_by('MeasureDate'):
         month = measure.MeasureDate.strftime("%Y/%m")
         DN = dict.get(month)
         if DN == None:
@@ -191,7 +192,7 @@ def monthchart_temp(request, year, month):
 
 def monthchart_temp_in_out(request, year, month):
     dict = {}
-    for measure in Measure.objects.filter(Q(Name="out") | Q(Name="saloon"), 
+    for measure in Measure.objects.filter(Q(Name="out") | Q(Name="in"), 
                                           MeasureDate__month = int(month),
                                           MeasureDate__year = int(year)).order_by('MeasureDate'):
         time = measure.MeasureDate.strftime("%d")
@@ -216,7 +217,7 @@ def monthchart_temp_in_out(request, year, month):
             if data.get(name) == None:
                 data[name] = []
             data[name].append(int(V/N))
-    return draw_graph({'Wewn.':data['saloon'],
+    return draw_graph({'Wewn.':data['in'],
                        'Zewn.':data['out']},
                       x_labels,
                       "Degrees Celsius")

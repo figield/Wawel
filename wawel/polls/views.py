@@ -33,7 +33,7 @@ def index(request):
         Out = Outs[len(Outs) -1 ].Value        
 
     Ins = LastMeasure.objects.filter( UnitOfMeasure = "C", 
-                                      Name = "saloon",  
+                                      Name = "in",  
                                       MeasureDate__year = date.today().year
                                       ).order_by('MeasureDate')
     if len(Ins) == 0:
@@ -72,7 +72,7 @@ def index(request):
 
     return render_to_response('polls/index.html', 
                               {'out':Out,  
-                               'saloon':In,  
+                               'in':In,  
                                'elec':Elec,  
                                'thermalgj':ThermalGJ,  
                                'thermalkwh':ThermalKWh, 
@@ -132,29 +132,23 @@ def monthenergy(request, year,  month):
                                'days':days},
                               context_instance=RequestContext(request))
 
-def yearreport(request):
-    months = MeasureMonth.objects.all()
-    return render_to_response('polls/yearreport.html', 
-                              {'months':months, 'year':date.today().year},
-                              context_instance=RequestContext(request))
-
-def yeartemp(request):
+def yeartemp(request, year):
     months = MeasureMonth.objects.all()
     return render_to_response('polls/yeartemp.html', 
                               {'months':months, 'year':date.today().year},
                               context_instance=RequestContext(request))
 
-def yearenergy(request):
+def yearenergy(request, year):
     months = MeasureMonth.objects.all()
     return render_to_response('polls/yearenergy.html', 
                               {'months':months, 'year':date.today().year},
                               context_instance=RequestContext(request))
 
-def yearreport2(request):
+def yeartemp2(request, year):
     months = MeasureMonth.objects.all()
-    (x_labels, dataDict) = generate_data_for_yearchart_temp_in_out()
+    (x_labels, dataDict) = generate_data_for_yearchart_temp_in_out(year)
 
-    TempsIn = dataDict.get('saloon')
+    TempsIn = dataDict.get('in')
     if TempsIn == None:
         TempsIn = []
 
@@ -197,6 +191,12 @@ def handle_value(request):
     sec = 0
 
     measureDate = datetime(year,  month,  day,  hour,  min,  sec)
+
+    if name = "temp_3":
+        name = "in"
+    elif name = "temp_2":
+        name = "out"
+
     measure = Measure(Name = name,  
                       Value = value, 
                       MeasureDate = measureDate, 
