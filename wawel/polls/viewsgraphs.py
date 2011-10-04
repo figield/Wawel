@@ -190,7 +190,18 @@ def monthchart_temp(request, year, month):
             data[name].append(int(V/N))
     return draw_graph(data,  x_labels,  "Degrees Celsius")
 
+
 def monthchart_temp_in_out(request, year, month):
+    (x_labels, data) = generate_data_for_yearchart_temp_in_out("2011")
+    print x_labels
+    print data
+    return draw_graph({'Wewn.':data['in'],
+                       'Zewn.':data['out']},
+                      x_labels,
+                      "Degrees Celsius")
+
+
+def generate_data_for_monthchart_temp_in_out(year, month):
     dict = {}
     for measure in Measure.objects.filter(Q(Name="out") | Q(Name="in"), 
                                           MeasureDate__month = int(month),
@@ -217,10 +228,7 @@ def monthchart_temp_in_out(request, year, month):
             if data.get(name) == None:
                 data[name] = []
             data[name].append(int(V/N))
-    return draw_graph({'Wewn.':data['in'],
-                       'Zewn.':data['out']},
-                      x_labels,
-                      "Degrees Celsius")
+    return (x_labels, data)
 
 def month_barchart(request, year, month):
     dict = {}
@@ -292,6 +300,10 @@ def daychart(request, name, year, month, day):
     return draw_graph(data,  x_labels,  unit)
 
 def daychart_temp(request,  year, month,  day):
+    (x_labels, data) = generate_data_for_daychart_temp_in_out(year, month, day)
+    return draw_graph(data,  x_labels, "Degrees Celsius")
+
+def generate_data_for_daychart_temp_in_out(year, month, day):
     data = {}
     x_labels = []
     for measure in Measure.objects.filter(UnitOfMeasure = "C", 
@@ -307,8 +319,7 @@ def daychart_temp(request,  year, month,  day):
             data[measure.Name].append(measure.Value)
             if Date not in x_labels:
                 x_labels.append(Date)    
-    return draw_graph(data,  x_labels, "Degrees Celsius")
-
+    return (x_labels, data)
 
 # Common function for line graphs
 def draw_graph(data,  x_labels,  y_title):

@@ -21,7 +21,7 @@
         chart.draw(data, 
                    {width: 750, 
                     height: 420, 
-                    title: 'Średnia temperatura w kolejnych dniach pomiarów',
+                    title: 'Temperatura w kolejnych godzinach pomiarów',
                     hAxis: {title: 'Czas', 
                             titleTextStyle: {color: '#FF0000'}}});
       }
@@ -34,7 +34,7 @@
 
     <div class="art-PostMetadataHeader">
         <h2 class="art-PostHeader">
-         Pomiar temperatury w ciagu miesiąca
+         Pomiar temperatury w ciagu dnia
         </h2>
     </div>
 
@@ -43,7 +43,7 @@
 	
         <br />
         <br />
-        <p>{{ year }}/{{ month }}</p>
+        <p>{{ year }}/{{ month }}/{{ day }}</p>
         <br />
 
       </div>
@@ -53,26 +53,6 @@
              align="center" 
              id="chart_div"> 
         </div>
-      
-      <div class="left">
-        Wybierz dzień:
-        <p>
-          {% if days %}
-          <form action="/selectday/" method="post">
-            {% csrf_token %}
-            <select name="selectday">
-              {% for day in days %}
-              <option value="{{day}}">{{day}}</option>
-              {% endfor %}
-            </select>
-            <input type="submit"
-                   value="Pokaż wykresy" />
-          </form>                               
-          {% else %}
-        <p> Baza pomiarów jest pusta.</p>
-        {% endif %}
-        </p>
-      </div>
      
     </div>
 {% endblock %}

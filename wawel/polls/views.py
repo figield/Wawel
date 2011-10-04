@@ -7,6 +7,8 @@ from django.template import RequestContext
 from datetime import date, datetime
 from customclasses import Cost
 from viewsgraphs import generate_data_for_yearchart_temp_in_out
+from viewsgraphs import generate_data_for_monthchart_temp_in_out
+from viewsgraphs import generate_data_for_daychart_temp_in_out
 import random
 
 # For Ajax requests
@@ -90,6 +92,27 @@ def dayreport(request, year,  month, day):
                                'month':month,
                                'day':day})
 
+def daytemp(request, year,  month, day):
+    (x_labels, dataDict) = generate_data_for_daychart_temp_in_out(year,month, day)
+
+    TempsIn = dataDict.get('in')
+    if TempsIn == None:
+        TempsIn = []
+
+    TempsOut = dataDict.get('out')
+    if TempsOut == None:
+        TempsOut = []
+
+    data = []
+    for (x_label, TempOut, TempIn) in zip(x_labels, TempsOut, TempsIn):
+        data.append([x_label, TempOut, TempIn])
+
+    return render_to_response('polls/daytemp.html', 
+                              {'year':year,
+                               'month':month,
+                               'day':day,
+                               'data':data})
+
 def monthreport(request, year, month):
     days = []
     for measure in Measure.objects.filter(MeasureDate__month = int(month),
@@ -105,6 +128,20 @@ def monthreport(request, year, month):
                               context_instance=RequestContext(request))
 
 def monthtemp(request, year, month):
+    (x_labels, dataDict) = generate_data_for_monthchart_temp_in_out(year,month)
+
+    TempsIn = dataDict.get('in')
+    if TempsIn == None:
+        TempsIn = []
+
+    TempsOut = dataDict.get('out')
+    if TempsOut == None:
+        TempsOut = []
+
+    data = []
+    for (x_label, TempOut, TempIn) in zip(x_labels, TempsOut, TempsIn):
+        data.append([x_label, TempOut, TempIn])
+
     days = []
     for measure in Measure.objects.filter(MeasureDate__month = int(month),
                                           MeasureDate__year = int(year)).order_by('MeasureDate'):
@@ -115,7 +152,8 @@ def monthtemp(request, year, month):
     return render_to_response('polls/monthtemp.html', 
                               {'year':year,  
                                'month':month,
-                               'days':days},
+                               'days':days,
+                               'data':data},
                               context_instance=RequestContext(request))
 
 def monthenergy(request, year,  month):
@@ -169,13 +207,13 @@ def selectmonth(request):
     Month = "2011/12"
     if request.method == 'POST':
         Month = request.POST['selectmonth']
-    return HttpResponseRedirect('/monthreport/'+ Month +'/') 
+    return HttpResponseRedirect('/monthtemp/'+ Month +'/') 
 
 def selectday(request):
     Day = "2011/12/01"
     if request.method == 'POST':
         Day = request.POST['selectday']
-    return HttpResponseRedirect('/dayreport/'+ Day +'/') 
+    return HttpResponseRedirect('/daytemp/'+ Day +'/') 
 
 #TODO: validate data
 #TODO: store input in logs!
