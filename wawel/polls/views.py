@@ -336,7 +336,7 @@ def costs(request):
     Yearscosts = []
     for y_key in y_keys:
         (YMin, YMax) = ydict.get(y_key)
-        YUsage = int(YMax - YMin)
+        YUsage = YMax - YMin
         Yearscosts.append(Cost(y_key,
                                YUsage,
                                round(YUsage * CostPerkWh, 2)))
@@ -345,7 +345,7 @@ def costs(request):
     Monthscosts = []
     for m_key in m_keys:
         (MMin, MMax) = mdict.get(m_key)
-        MUsage = int(MMax - MMin)
+        MUsage = MMax - MMin
         Monthscosts.append(Cost(m_key,
                                 MUsage,
                                 round(MUsage * CostPerkWh, 2)))
