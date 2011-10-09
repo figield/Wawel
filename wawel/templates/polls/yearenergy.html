@@ -1,28 +1,56 @@
 {% extends "polls/base.html" %}
 
+{% block javascript %}
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Year');
+        data.addColumn('number', 'Energia elektryczna [kWh]');
+        data.addColumn('number', 'Energia cieplna [kWh]');
+        data.addRows(
+         {% autoescape off %}
+             {{ data }}
+         {% endautoescape %}
+        );
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, 
+                   {width: 750, 
+                    height: 420, 
+                    title: 'Wykres energii elektrycznej oraz cieplnej w ciagu roku',
+                    hAxis: {title: 'Miesiąc', 
+                            titleTextStyle: {color: '#FF0000'}}});
+      }
+
+ </script>
+
+{% endblock %}
 
 {% block main %}
 
     <div class="art-PostMetadataHeader">
         <h2 class="art-PostHeader">
-               Wykres zużycia energii elektrycznej oraz cieplnej w ciagu roku
+          Różnica przyrostu energii w poszczególnych miesiącach
         </h2>
     </div>
 
     <div class="art-PostContent">
-      <div align="center">	
-        <br />
-        <br />
-        <img src="/yearElecBarChart/{{ year }}/"> 
-        <br />
-        <br />
-      </div>
+
+      <div style="padding-top:20px;
+                  padding-bottom:20px;" 
+           align="center" 
+           id="chart_div"> </div>
 
       <div class="left">
         Wybierz miesiąc:
         <p>
           {% if months %}
-          <form action="/selectmonth/" method="post">
+          <form action="/selectmonth_energy/" method="post">
             {% csrf_token %}
             <select name="selectmonth">
               {% for month in months %}

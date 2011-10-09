@@ -9,6 +9,9 @@ from customclasses import Cost
 from viewsgraphs import generate_data_for_yearchart_temp_in_out
 from viewsgraphs import generate_data_for_monthchart_temp_in_out
 from viewsgraphs import generate_data_for_daychart_temp_in_out
+from viewsgraphs import generate_data_for_yearbarchart_energy
+from viewsgraphs import generate_data_for_monthbarchart_energy
+from viewsgraphs import generate_data_for_daybarchart_energy
 import random
 
 # For Ajax requests
@@ -86,12 +89,6 @@ def index(request):
 def photos(request):
     return render_to_response('polls/photos.html', {})
 
-def dayreport(request, year,  month, day):
-    return render_to_response('polls/dayreport.html', 
-                              {'year':year,
-                               'month':month,
-                               'day':day})
-
 def daytemp(request, year,  month, day):
     (x_labels, dataDict) = generate_data_for_daychart_temp_in_out(year,month, day)
 
@@ -112,20 +109,6 @@ def daytemp(request, year,  month, day):
                                'month':month,
                                'day':day,
                                'data':data})
-
-def monthreport(request, year, month):
-    days = []
-    for measure in Measure.objects.filter(MeasureDate__month = int(month),
-                                          MeasureDate__year = int(year)).order_by('MeasureDate'):
-        Date = measure.MeasureDate.strftime("%Y/%m/%d")
-        if Date not in days:
-            days.append(Date)
-
-    return render_to_response('polls/monthreport.html', 
-                              {'year':year,  
-                               'month':month,
-                               'days':days},
-                              context_instance=RequestContext(request))
 
 def monthtemp(request, year, month):
     (x_labels, dataDict) = generate_data_for_monthchart_temp_in_out(year,month)
@@ -156,7 +139,40 @@ def monthtemp(request, year, month):
                                'data':data},
                               context_instance=RequestContext(request))
 
-def monthenergy(request, year,  month):
+def dayenergy(request, year,  month, day):
+    (x_labels, dataDict) = generate_data_for_daybarchart_energy(year,month, day)
+    Elecs = dataDict.get('elec')
+    if Elecs == None:
+        Elecs = []
+
+    Thermals = dataDict.get('thermal')
+    if Thermals == None:
+        Thermals = []
+
+    data = []
+    for (x_label, Elec, Thermal) in zip(x_labels, Elecs, Thermals):
+        data.append([x_label, Elec, Thermal])
+    return render_to_response('polls/dayenergy.html', 
+                              {'year':year,
+                               'month':month,
+                               'day':day,
+                               'data':data})
+
+def monthenergy(request, year, month):
+    (x_labels, dataDict) = generate_data_for_monthbarchart_energy(year, month)
+
+    Elecs = dataDict.get('elec')
+    if Elecs == None:
+        Elecs = []
+
+    Thermals = dataDict.get('thermal')
+    if Thermals == None:
+        Thermals = []
+
+    data = []
+    for (x_label, Elec, Thermal) in zip(x_labels, Elecs, Thermals):
+        data.append([x_label, Elec, Thermal])
+
     days = []
     for measure in Measure.objects.filter(MeasureDate__month = int(month),
                                           MeasureDate__year = int(year)).order_by('MeasureDate'):
@@ -167,22 +183,31 @@ def monthenergy(request, year,  month):
     return render_to_response('polls/monthenergy.html', 
                               {'year':year,  
                                'month':month,
-                               'days':days},
-                              context_instance=RequestContext(request))
-
-def yeartemp(request, year):
-    months = MeasureMonth.objects.all()
-    return render_to_response('polls/yeartemp.html', 
-                              {'months':months, 'year':date.today().year},
+                               'days':days,
+                               'data':data},
                               context_instance=RequestContext(request))
 
 def yearenergy(request, year):
     months = MeasureMonth.objects.all()
+    (x_labels, dataDict) = generate_data_for_yearbarchart_energy(year)
+
+    Elecs = dataDict.get('elec')
+    if Elecs == None:
+        Elecs = []
+
+    Thermals = dataDict.get('thermal')
+    if Thermals == None:
+        Thermals = []
+
+    data = []
+    for (x_label, Elec, Thermal) in zip(x_labels, Elecs, Thermals):
+        data.append([x_label, Elec, Thermal])
     return render_to_response('polls/yearenergy.html', 
-                              {'months':months, 'year':date.today().year},
+                              {'months':months, 
+                               'data':data},
                               context_instance=RequestContext(request))
 
-def yeartemp2(request, year):
+def yeartemp(request, year):
     months = MeasureMonth.objects.all()
     (x_labels, dataDict) = generate_data_for_yearchart_temp_in_out(year)
 
@@ -197,8 +222,7 @@ def yeartemp2(request, year):
     data = []
     for (x_label, TempOut, TempIn) in zip(x_labels, TempsOut, TempsIn):
         data.append([x_label, TempOut, TempIn])
-    #print data
-    return render_to_response('polls/yearreport2.html', 
+    return render_to_response('polls/yeartemp.html', 
                               {'months':months, 
                                'data':data},
                               context_instance=RequestContext(request))
@@ -209,11 +233,23 @@ def selectmonth(request):
         Month = request.POST['selectmonth']
     return HttpResponseRedirect('/monthtemp/'+ Month +'/') 
 
+def selectmonth_energy(request):
+    Month = "2011/12"
+    if request.method == 'POST':
+        Month = request.POST['selectmonth']
+    return HttpResponseRedirect('/monthenergy/'+ Month +'/') 
+
 def selectday(request):
     Day = "2011/12/01"
     if request.method == 'POST':
         Day = request.POST['selectday']
     return HttpResponseRedirect('/daytemp/'+ Day +'/') 
+
+def selectday_energy(request):
+    Day = "2011/12/01"
+    if request.method == 'POST':
+        Day = request.POST['selectday']
+    return HttpResponseRedirect('/dayenergy/'+ Day +'/') 
 
 #TODO: validate data
 #TODO: store input in logs!
@@ -265,7 +301,6 @@ def handle_value(request):
     return render_to_response('polls/insert.html', {'measure':measure})
 
 def costs(request):
-
     ydict = {}
     mdict = {}
     All = Measure.objects.filter(Name = 'elec').order_by('MeasureDate')

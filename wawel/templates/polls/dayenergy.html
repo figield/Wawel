@@ -22,8 +22,8 @@
         chart.draw(data, 
                    {width: 750, 
                     height: 420, 
-                    title: 'Wykres energii elektrycznej oraz cieplnej w ciagu miesiąca',
-                    hAxis: {title: 'Dzień', 
+                    title: 'Wykres energii elektrycznej oraz cieplnej w ciagu dnia',
+                    hAxis: {title: 'Godzina', 
                             titleTextStyle: {color: '#FF0000'}}});
       }
 
@@ -35,14 +35,14 @@
 
     <div class="art-PostMetadataHeader">
         <h2 class="art-PostHeader">
-          Różnica przyrostu energii w poszczególnych dniach
+          Różnica przyrostu energii w poszczególnych godzinach
         </h2>
     </div>
 
     <div class="art-PostContent">
       <div align="center">	
         <br />
-        <p>{{ year }}/{{ month }}</p>
+        <p>{{ year }}/{{ month }}/{{ day }}</p>
       </div>
       
       <div style="padding-top:20px;
@@ -50,25 +50,5 @@
            align="center" 
            id="chart_div"> </div>
 
-
-      <div class="left">
-        Wybierz dzień:
-        <p>
-          {% if days %}
-          <form action="/selectday_energy/" method="post">
-            {% csrf_token %}
-            <select name="selectday">
-              {% for day in days %}
-              <option value="{{day}}">{{day}}</option>
-              {% endfor %}
-            </select>
-            <input type="submit"
-                   value="Pokaż wykresy" />
-          </form>                               
-          {% else %}
-        <p> Baza pomiarów jest pusta.</p>
-        {% endif %}
-        </p>
-      </div>
     </div>
 {% endblock %}
