@@ -72,8 +72,8 @@ def generate_data_for_yearbarchart_energy(year):
     for month in x_labels:
         (Min, Max) = dict.get(month)
         (Min2, Max2) = dict2.get(month)
-        data[name].append(int(Max - Min))
-        data[name2].append(int((Max2 - Min2) * 277.77777777778))
+        data[name].append(round(Max - Min, 4))
+        data[name2].append(round((Max2 - Min2) * 277.77777777778, 4))
     return (x_labels, data)
 
 def generate_data_for_monthchart_temp_in_out(year, month):
@@ -152,8 +152,8 @@ def generate_data_for_monthbarchart_energy(year, month):
     for day in x_labels:
         (Min, Max) = dict.get(day)
         (Min2, Max2) = dict2.get(day)
-        data[name].append(int(Max - Min))
-        data[name2].append(int((Max2 - Min2) * 277.77777777778))
+        data[name].append(round(Max - Min, 4))
+        data[name2].append(round((Max2 - Min2) * 277.77777777778, 4))
     return (x_labels, data)
 
 
