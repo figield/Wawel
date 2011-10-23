@@ -21,11 +21,17 @@ def update_temp(request, id):
                                         MeasureDate__year = date.today().year
                                         ).order_by('MeasureDate')
     if len(Temps) == 0:
-        return render_to_response('polls/temp.html', {id:0})
+        if id == 'in':
+            return render_to_response('polls/temp_in.html', {id:0})
+        else:
+            return render_to_response('polls/temp_out.html', {id:0})
     else:
         Temp = Temps[len(Temps) -1 ].Value 
         R = random.randint(-4, 4) * 0.1
-        return render_to_response('polls/temp.html', {id:Temp + R})
+        if id == 'in':
+            return render_to_response('polls/temp_in.html', {id:Temp + R})
+        else:
+            return render_to_response('polls/temp_out.html', {id:Temp + R})
 
 def index(request):
     Outs = LastMeasure.objects.filter( UnitOfMeasure = "C", 
@@ -84,6 +90,46 @@ def index(request):
                                'cop':cop,
                                'day_cost':day_cost,
                                'month_cost':month_cost
+                               })
+
+def include(request):
+    Outs = LastMeasure.objects.filter( UnitOfMeasure = "C", 
+                                       Name = "out",  
+                                       MeasureDate__year = date.today().year
+                                       ).order_by('MeasureDate')
+    if len(Outs) == 0:
+        Out = 0
+    else:
+        Out = Outs[len(Outs) -1 ].Value        
+
+    Ins = LastMeasure.objects.filter( UnitOfMeasure = "C", 
+                                      Name = "in",  
+                                      MeasureDate__year = date.today().year
+                                      ).order_by('MeasureDate')
+    if len(Ins) == 0:
+        In = 0
+    else:
+        In = Ins[len(Ins) -1 ].Value
+    
+    Elecs = Measure.objects.filter( UnitOfMeasure = "kWh", 
+                                    Name = "elec",  
+                                    MeasureDate__year = date.today().year
+                                    ).order_by('MeasureDate')
+
+    # TODO: calculate day's costs of electricity usage
+    day_cost = 5.0
+    # TODO: calculate month's costs
+    month_cost = 30 * 5.0
+
+    (Yearscosts, Monthscosts) = calculate_costs()
+
+    return render_to_response('polls/include.html', 
+                              {'out':Out,  
+                               'in':In,  
+                               'day_cost':day_cost,
+                               'month_cost':month_cost,
+                               'yearscosts':Yearscosts,
+                               'monthscosts':Monthscosts
                                })
 
 def photos(request):
@@ -301,6 +347,12 @@ def handle_value(request):
     return render_to_response('polls/insert.html', {'measure':measure})
 
 def costs(request):
+    (Yearscosts, Monthscosts) = calculate_costs()
+    return render_to_response('polls/costs.html', 
+                              {'yearscosts':Yearscosts,
+                               'monthscosts':Monthscosts})
+
+def calculate_costs():
     ydict = {}
     mdict = {}
     All = Measure.objects.filter(Name = 'elec').order_by('MeasureDate')
@@ -349,10 +401,7 @@ def costs(request):
         Monthscosts.append(Cost(m_key,
                                 MUsage,
                                 round(MUsage * CostPerkWh, 2)))
-
-    return render_to_response('polls/costs.html', 
-                              {'yearscosts':Yearscosts,
-                               'monthscosts':Monthscosts})
+    return (Yearscosts, Monthscosts)
 
 def contact(request):            
     return render_to_response('polls/contact.html', {})

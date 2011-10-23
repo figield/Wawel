@@ -6,6 +6,7 @@ admin.autodiscover()
 urlpatterns = patterns('polls.views',
     # url(r'^$', 'polls.views.home', name='home'),
     (r'^$', 'index'),
+    (r'^include/$', 'include'),
     (r'^yeartemp/(?P<year>\w+)/$', 'yeartemp'),
     (r'^yearenergy/(?P<year>\w+)/$', 'yearenergy'),
     (r'^photos/$', 'photos'),
