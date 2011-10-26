@@ -16,14 +16,9 @@
       };
     </script>
 
-   <link rel="stylesheet" href="/site_media/style.css" type="text/css" media="screen" />
+   <link rel="stylesheet" href="/site_media/style.css" type="text/css" media="screen" /> 
     <!--[if IE 6]><link rel="stylesheet" href="/site_media/style.ie6.css" type="text/css" media="screen" /><![endif]-->
     <!--[if IE 7]><link rel="stylesheet" href="/site_media/style.ie7.css" type="text/css" media="screen" /><![endif]-->
-
-    <style type="text/css">
-      #outercontainer { position:relative }
-      #innercontainer { position:absolute }
-    </style>
 
 </head>
 
@@ -31,11 +26,7 @@
              color: #000000;
              font-family: Tahoma,Arial,Helvetica,Sans-Serif;
              font-size: 12px;
-             font-style: normal;
-             font-weight: normal;
-             text-align: center;
-             align: middle">
-  
+             text-align: center">
   <script>
     window.onload=function(){
     update_temp('in');
@@ -43,7 +34,7 @@
     }  
   </script>
 
-  <p><b>Średni koszt ogrzewania to:</b></p>
+  <p style="font-size: 15px;"><b>Średni koszt ogrzewania to:</b></p>
 
   <div style="color: red;
               font-size: 24px;">
@@ -51,49 +42,47 @@
     <p><b>{{month_cost}} zł miesięcznie</b></p>
   </div>
 
-  <div style="position: relative;">
-    <div style="position: relative; 
-                left: 150px; 
-                top: 150px; 
-                color: #000;">
+  <div style="position:relative;
+              top:-60px;">
+    <div style="position:relative; 
+                left:150px; 
+                top:150px; 
+                color:#000;">
       <div id="update_temp_out">
         <b>Temperatura na zewnątrz: {{out}} &deg;C</b>
       </div>
     </div>       
- 
-    <div style="position: relative; 
-                left: 150px; 
-                top: 145px;">
+    <div style="position:relative; 
+                left:150px; 
+                top:145px;">
       <img src="/site_media/images/blink.gif" />
     </div>
     
-    <div style="position: relative; 
-                left: 140px; 
-                top: 250px; 
-                color: #000;">
+    <div style="position:relative; 
+                left:140px; 
+                top:250px; 
+                color:#000;">
       <div id="update_temp_in">
         <b>Temperatura wewnątrz: {{in}} &deg;C</b>
       </div>
     </div>
-    <div style="position: relative; 
-                left: 240px; 
-                top: 250px;">
+    <div style="position:relative; 
+                left:240px; 
+                top:250px;">
       <img src="/site_media/images/blink.gif" />
     </div>
 
-    <div>
-      <img style="padding:1px;
-                  border:1px solid #B5B8AD;
-                  background-color:#000000;" 
-           src="/site_media/images/dom1.jpg" />
-    </div>  
+    <img style="padding:1px;
+                border:1px solid #B5B8AD;
+                background-color:#000000;" 
+         src="/site_media/images/dom1.jpg" />
   </div>  
 
-  <div><p>TEKST</p></div>
-
-    <table class="gridtable" style="margin-left: auto;
-                                    margin-right: auto;
-                                    text-align: center;">
+  <div style="position:relative;
+              top:-30px;">
+    <table class="gridtable" style="margin-left:auto;
+                                    margin-right:auto;
+                                    text-align:center;">
       <tr>
         <th>Rok</th>
         <th>Zużyta energia<br/> (kWh)</th>
@@ -101,15 +90,15 @@
       </tr>                
       {% for yearcost in yearscosts %}
       <tr>
-        <td><b>{{ yearcost.period }}<b></td>
+        <td><b>{{ yearcost.period }}</b></td>
         <td>{{ yearcost.usage }}</td>
         <td>{{ yearcost.cost }}</td>
       </tr>
       {% endfor %}
     </table>
-
+    
     <p> </p>
-
+    
     <table class="gridtable" style="margin-left: auto;
                                     margin-right: auto;
                                     text-align: center;">
@@ -120,20 +109,20 @@
       </tr>
       {% for monthcost in monthscosts %}
       <tr>
-        <td><b>{{ monthcost.period }}<b></td>
+        <td><b>{{ monthcost.period }}</b></td>
         <td>{{ monthcost.usage }}</td>
         <td>{{ monthcost.cost }}</td>
       </tr>
       {% endfor %}
     </table>
-
-    <p> </p>
-
-  <div>
+  </div>
+    
+  <p> </p>
+  
+  <div style="position:relative;
+              top:-30px;">
     <img src="/site_media/images/viessmann_logo.jpg" />          
   </div>
   
 </body>
 </html>
-
-    
