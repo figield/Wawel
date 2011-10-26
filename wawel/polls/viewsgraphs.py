@@ -2,9 +2,12 @@ from polls.models import Measure
 from datetime import date, datetime
 from django.db.models import Q
 
+IN = 'WEW'
+OUT = 'ZEW'
+
 def generate_data_for_yearchart_temp_in_out(year):
     dict = {}
-    for measure in Measure.objects.filter(Q(Name="out") | Q(Name="in"),
+    for measure in Measure.objects.filter(Q(Name=OUT) | Q(Name=IN),
                                           MeasureDate__year = int(year)).order_by('MeasureDate'):
         month = measure.MeasureDate.strftime("%Y/%m")
         DN = dict.get(month)
@@ -78,7 +81,7 @@ def generate_data_for_yearbarchart_energy(year):
 
 def generate_data_for_monthchart_temp_in_out(year, month):
     dict = {}
-    for measure in Measure.objects.filter(Q(Name="out") | Q(Name="in"), 
+    for measure in Measure.objects.filter(Q(Name=OUT) | Q(Name=IN), 
                                           MeasureDate__month = int(month),
                                           MeasureDate__year = int(year)).order_by('MeasureDate'):
         time = measure.MeasureDate.strftime("%d")

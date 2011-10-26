@@ -14,28 +14,37 @@ from viewsgraphs import generate_data_for_monthbarchart_energy
 from viewsgraphs import generate_data_for_daybarchart_energy
 import random
 
+IN = 'WEW'
+OUT = 'ZEW'
+
 # For Ajax requests
 def update_temp(request, id):
+
+    if id == 'in':
+        Tid = IN
+    else:
+        Tid = OUT
+
     Temps = LastMeasure.objects.filter( UnitOfMeasure = "C", 
-                                        Name = id,  
+                                        Name = Tid,  
                                         MeasureDate__year = date.today().year
                                         ).order_by('MeasureDate')
     if len(Temps) == 0:
-        if id == 'in':
-            return render_to_response('polls/temp_in.html', {id:0})
+        if Tid == IN:
+            return render_to_response('polls/temp_in.html', {'in':0})
         else:
-            return render_to_response('polls/temp_out.html', {id:0})
+            return render_to_response('polls/temp_out.html', {'out':0})
     else:
         Temp = Temps[len(Temps) -1 ].Value 
         R = random.randint(-4, 4) * 0.1
-        if id == 'in':
-            return render_to_response('polls/temp_in.html', {id:Temp + R})
+        if Tid == IN:
+            return render_to_response('polls/temp_in.html', {'in':Temp + R})
         else:
-            return render_to_response('polls/temp_out.html', {id:Temp + R})
+            return render_to_response('polls/temp_out.html', {'out':Temp + R})
 
 def index(request):
     Outs = LastMeasure.objects.filter( UnitOfMeasure = "C", 
-                                       Name = "out",  
+                                       Name = OUT,  
                                        MeasureDate__year = date.today().year
                                        ).order_by('MeasureDate')
     if len(Outs) == 0:
@@ -44,7 +53,7 @@ def index(request):
         Out = Outs[len(Outs) -1 ].Value        
 
     Ins = LastMeasure.objects.filter( UnitOfMeasure = "C", 
-                                      Name = "in",  
+                                      Name = IN,  
                                       MeasureDate__year = date.today().year
                                       ).order_by('MeasureDate')
     if len(Ins) == 0:
@@ -94,7 +103,7 @@ def index(request):
 
 def include(request):
     Outs = LastMeasure.objects.filter( UnitOfMeasure = "C", 
-                                       Name = "out",  
+                                       Name = OUT,  
                                        MeasureDate__year = date.today().year
                                        ).order_by('MeasureDate')
     if len(Outs) == 0:
@@ -103,7 +112,7 @@ def include(request):
         Out = Outs[len(Outs) -1 ].Value        
 
     Ins = LastMeasure.objects.filter( UnitOfMeasure = "C", 
-                                      Name = "in",  
+                                      Name = IN,  
                                       MeasureDate__year = date.today().year
                                       ).order_by('MeasureDate')
     if len(Ins) == 0:
@@ -138,11 +147,11 @@ def photos(request):
 def daytemp(request, year,  month, day):
     (x_labels, dataDict) = generate_data_for_daychart_temp_in_out(year,month, day)
 
-    TempsIn = dataDict.get('in')
+    TempsIn = dataDict.get(IN)
     if TempsIn == None:
         TempsIn = []
 
-    TempsOut = dataDict.get('out')
+    TempsOut = dataDict.get(OUT)
     if TempsOut == None:
         TempsOut = []
 
@@ -159,11 +168,11 @@ def daytemp(request, year,  month, day):
 def monthtemp(request, year, month):
     (x_labels, dataDict) = generate_data_for_monthchart_temp_in_out(year,month)
 
-    TempsIn = dataDict.get('in')
+    TempsIn = dataDict.get(IN)
     if TempsIn == None:
         TempsIn = []
 
-    TempsOut = dataDict.get('out')
+    TempsOut = dataDict.get(OUT)
     if TempsOut == None:
         TempsOut = []
 
@@ -257,11 +266,11 @@ def yeartemp(request, year):
     months = MeasureMonth.objects.all()
     (x_labels, dataDict) = generate_data_for_yearchart_temp_in_out(year)
 
-    TempsIn = dataDict.get('in')
+    TempsIn = dataDict.get(IN)
     if TempsIn == None:
         TempsIn = []
 
-    TempsOut = dataDict.get('out')
+    TempsOut = dataDict.get(OUT)
     if TempsOut == None:
         TempsOut = []
 
@@ -311,11 +320,6 @@ def handle_value(request):
     sec = 0
 
     measureDate = datetime(year,  month,  day,  hour,  min,  sec)
-
-    if name == "temp_3":
-        name = "in"
-    elif name == "temp_2":
-        name = "out"
 
     measure = Measure(Name = name,  
                       Value = value, 
