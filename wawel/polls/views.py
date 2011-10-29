@@ -409,3 +409,6 @@ def calculate_costs():
 
 def contact(request):            
     return render_to_response('polls/contact.html', {})
+
+def heating(request):            
+    return render_to_response('polls/heating.html', {})

@@ -20,6 +20,7 @@ urlpatterns = patterns('polls.views',
     (r'^selectday/$', 'selectday'),
     (r'^selectday_energy/$', 'selectday_energy'),
     (r'^contact/$', 'contact'),
+    (r'^heating/$', 'heating'),
     (r'^costs/$', 'costs'),
     (r'^insert/$', 'handle_value'),
     (r'^update_temp/(?P<id>\w+)/$', 'update_temp')
