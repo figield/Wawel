@@ -23,11 +23,8 @@ urlpatterns = patterns('polls.views',
     (r'^heating/$', 'heating'),
     (r'^costs/$', 'costs'),
     (r'^insert/$', 'handle_value'),
-    (r'^update_temp/(?P<id>\w+)/$', 'update_temp')
+    (r'^update_temp/(?P<id>\w+)/$', 'update_temp'),
+    (r'^admin/', include(admin.site.urls)),
+    (r'^(?P<fake>\w+)/$', 'anyrequest')
 )
 
-urlpatterns += patterns('',
-    (r'^admin/', include(admin.site.urls)),
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-)

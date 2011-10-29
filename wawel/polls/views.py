@@ -412,3 +412,6 @@ def contact(request):
 
 def heating(request):            
     return render_to_response('polls/heating.html', {})
+
+def anyrequest(request, fake):            
+    return HttpResponseRedirect('/') 
