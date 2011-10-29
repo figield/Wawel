@@ -17,7 +17,7 @@ import random
 IN = 'WEW'
 OUT = 'ZEW'
 
-# For Ajax requests
+# For Ajax requests in the include.html
 def update_temp(request, id):
 
     if id == 'in':
@@ -41,6 +41,29 @@ def update_temp(request, id):
             return render_to_response('polls/temp_in.html', {'in':Temp + R})
         else:
             return render_to_response('polls/temp_out.html', {'out':Temp + R})
+
+# For Ajax requests in the index.html
+def update_temp2(request, id):
+    if id == 'in':
+        Tid = IN
+    else:
+        Tid = OUT
+    Temps = LastMeasure.objects.filter( UnitOfMeasure = "C", 
+                                        Name = Tid,  
+                                        MeasureDate__year = date.today().year
+                                        ).order_by('MeasureDate')
+    if len(Temps) == 0:
+        if Tid == IN:
+            return render_to_response('polls/temp.html', {'in':0})
+        else:
+            return render_to_response('polls/temp.html', {'out':0})
+    else:
+        Temp = Temps[len(Temps) -1 ].Value 
+        R = random.randint(-4, 4) * 0.1
+        if Tid == IN:
+            return render_to_response('polls/temp.html', {'in':Temp + R})
+        else:
+            return render_to_response('polls/temp.html', {'out':Temp + R})
 
 def index(request):
     Outs = LastMeasure.objects.filter( UnitOfMeasure = "C", 
@@ -85,9 +108,7 @@ def index(request):
     else:
         cop = round(ThermalKWh / Elec, 3)
 
-    # TODO: calculate day's costs of electricity usage
     day_cost = 5.0
-    # TODO: calculate month's costs
     month_cost = 30 * 5.0
 
     return render_to_response('polls/index.html', 
@@ -125,9 +146,7 @@ def include(request):
                                     MeasureDate__year = date.today().year
                                     ).order_by('MeasureDate')
 
-    # TODO: calculate day's costs of electricity usage
     day_cost = 5.0
-    # TODO: calculate month's costs
     month_cost = 30 * 5.0
 
     (Yearscosts, Monthscosts) = calculate_costs()
@@ -306,8 +325,6 @@ def selectday_energy(request):
         Day = request.POST['selectday']
     return HttpResponseRedirect('/dayenergy/'+ Day +'/') 
 
-#TODO: validate data
-#TODO: store input in logs!
 def handle_value(request):
     name = request.GET['name']
     value = float(request.GET['value'])

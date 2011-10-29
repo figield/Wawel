@@ -24,6 +24,7 @@ urlpatterns = patterns('polls.views',
     (r'^costs/$', 'costs'),
     (r'^insert/$', 'handle_value'),
     (r'^update_temp/(?P<id>\w+)/$', 'update_temp'),
+    (r'^update_temp2/(?P<id>\w+)/$', 'update_temp2'),
     (r'^admin/', include(admin.site.urls)),
     (r'^(?P<fake>\w+)/$', 'anyrequest')
 )
