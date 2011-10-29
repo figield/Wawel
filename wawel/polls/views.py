@@ -213,7 +213,7 @@ def get_next_month(year, month, monthdiff, name):
     nextMeasures = Measure.objects.filter(
         Name = name,
         MeasureDate__year = nextYear, 
-        MeasureDate__month = nextMonth,)
+        MeasureDate__month = nextMonth)
     if len(nextMeasures) > 0:
         return str(nextYear)+ "/" + str(nextMonth)
     else:
