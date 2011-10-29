@@ -9,6 +9,30 @@ function update_temp(Id) {
     return false;
 };
 </script>
+
+<script language="Javascript">
+function toggleDiv(id,flagit) {
+  if (flagit=="1"){
+    if (document.layers) document.layers[''+id+''].visibility = "show"
+    else if (document.all) document.all[''+id+''].style.visibility = "visible"
+    else if (document.getElementById) document.getElementById(''+id+'').style.visibility = "visible"
+  }
+  else if (flagit=="0"){
+    if (document.layers) document.layers[''+id+''].visibility = "hide"
+    else if (document.all) document.all[''+id+''].style.visibility = "hidden"
+    else if (document.getElementById) document.getElementById(''+id+'').style.visibility = "hidden"
+  }
+}
+</script>
+
+<style type="text/css">
+  #div1 {position:absolute; top: 100px; left: 4px; width:130px; visibility:hidden}
+  #div2 {position:absolute; top: 320px; left: 4px; width:130px; visibility:hidden}
+  #div3 {position:absolute; top: 100px; right: 4px; width:130px; visibility:hidden}
+  #div4 {position:absolute; top: 240px; right: 4px; width:130px; visibility:hidden}
+  #div5 {position:absolute; top: 350px; right: 4px; width:130px; visibility:hidden}
+</style>
+
 {% endblock %}
 
 {% block main %}
@@ -18,54 +42,79 @@ function update_temp(Id) {
             update_temp('out');
         }  
    </script>
-
-    <div class="art-PostContent">
-      <div align="center">
-        
+   
+   <div class="art-PostContent">
+      <div align="center">      
         <div><img style="padding:1px;
                          border:1px solid #B5B8AD;
                          background-color:#000000;" 
                   src="/site_media/images/dom1.jpg" /></div>
-        <div style="position: absolute; left: 4px; top: 50px; color: #fff;">
+
+        <div style="position: absolute; left: 4px; top: 50px; color: #fff;"
+             onMouseOver="toggleDiv('div1',1)" onMouseOut="toggleDiv('div1',0)">
           Temperatura na zewnątrz:
           <div class="measure">
             <div id="update_temp_out"> {{out}} &deg;C</div>
           </div>
         </div>
-        
-        <div style="position: absolute; left: 200px; top: 50px;">
-          <img src="/site_media/images/blink.gif" />
+
+        <div id="div1">
+          Temperatura mierzona na zewnątrz budynku
+        </div>
+
+        <div style="position: absolute; left: 200px; top: 50px;"
+             onMouseOver="toggleDiv('div1',1)" onMouseOut="toggleDiv('div1',0)">
+            <img src="/site_media/images/blink.gif" />
         </div>
         
-        <div style="position: absolute; left: 10px; top: 280px; color: #fff;">
+        <div style="position: absolute; left: 10px; top: 270px; color: #fff;" 
+             onMouseOver="toggleDiv('div2',1)" onMouseOut="toggleDiv('div2',0)">
           Temperatura wewnątrz:
           <div class="measure">
             <div id="update_temp_in"> {{in}} &deg;C</div>
           </div>
         </div>
-        <div style="position: absolute; left: 630px; top: 280px;">
+
+        <div id="div2">
+          Temperatura mierzona w budynku
+        </div>
+
+        <div style="position: absolute; left: 630px; top: 280px;"
+             onMouseOver="toggleDiv('div2',1)" onMouseOut="toggleDiv('div2',0)">
           <img src="/site_media/images/blink.gif" />
         </div>
         
-        <div style="position: absolute; right: 15px; top: 50px; color: #fff;">
+        <div style="position: absolute; right: 15px; top: 50px; color: #fff;"
+             onMouseOver="toggleDiv('div3',1)" onMouseOut="toggleDiv('div3',0)">
           Energia elektryczna:
           <div class="measure">{{elec}} kWh</div>
         </div>
-        <div style="position: absolute; right: 15px; top: 180px; color: #fff;">
+        <div id="div3">
+          Ilość energii elektrycznej zużytej przez pompę ciepła
+        </div>
+
+        <div style="position: absolute; right: 15px; top: 160px; color: #fff;"
+             onMouseOver="toggleDiv('div4',1)" onMouseOut="toggleDiv('div4',0)">
           Energia cieplna:
           <div class="measure">{{thermalgj}} GJ </div>
           <div class="measure">{{thermalkwh}} kWh</div>
         </div>
-        
-         <div style="position: absolute; right: 15px; top: 320px; color: #fff;">
-           COP  
-           <div class="measure">{{cop}}</div>
-         </div>
-         
+        <div id="div4">
+          Ilość energii wytworzonej przez pompę ciepła
+        </div>        
+
+        <div style="position: absolute; right: 15px; top: 300px; color: #fff;"
+             onMouseOver="toggleDiv('div5',1)" onMouseOut="toggleDiv('div5',0)">
+          COP  
+          <div class="measure">{{cop}}</div>
+        </div>
+        <div id="div5">
+          Iloraz (stosunek) ilości zużytej energii elektrycznej do uzyskanej enrgii cieplnej przez pompę ciepła
+        </div>        
          
       </div>
     </div>
-
+    
     <div class="art-PostContent">
       <div class="wrapper">
         <div class="left">
@@ -97,7 +146,7 @@ function update_temp(Id) {
       </div>     
     </div>
 
-{% endblock %}
+{% endblock %}    
 
 
     
