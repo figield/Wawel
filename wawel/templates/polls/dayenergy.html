@@ -39,16 +39,40 @@
         </h2>
     </div>
 
-    <div class="art-PostContent">
-      <div align="center">	
-        <br />
-        <p>{{ year }}/{{ month }}/{{ day }}</p>
-      </div>
-      
+    <div class="art-PostContent">      
       <div style="padding-top:20px;
                   padding-bottom:20px;" 
            align="center" 
-           id="chart_div"> </div>
+           id="chart_div"> 
+      </div>
 
+      <table style="margin-left:auto;
+                    margin-right:auto;
+                    text-align:center;">
+        <tr>
+          <td>
+            {% if prevdate %} 
+            <a href="/dayenergy/{{prevdate}}/">
+              <img style="padding:1px;"
+                   src="/site_media/images/arrow_left.png"
+                   alt="Poprzedni dzień" />
+            </a>
+            {% endif %}
+          </td>
+          <td>
+            <b>{{ year }}/{{ month }}/{{ day }}</b>
+          </td>
+          <td>
+            {% if nextdate %} 
+            <a href="/dayenergy/{{nextdate}}/">
+              <img style="padding:1px;"
+                   src="/site_media/images/arrow_right.png"
+                   alt="Następny dzień" />
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+      
     </div>
 {% endblock %}

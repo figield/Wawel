@@ -39,20 +39,39 @@
     </div>
 
     <div class="art-PostContent">
-      <div align="center">
-	
-        <br />
-        <br />
-        <p>{{ year }}/{{ month }}/{{ day }}</p>
-        <br />
-
-      </div>
-
         <div style="padding-top:20px;
                     padding-bottom:20px;" 
              align="center" 
              id="chart_div"> 
-        </div>
-     
+        </div>        
+
+        <table style="margin-left:auto;
+                      margin-right:auto;
+                      text-align:center;">
+          <tr>
+            <td>
+              {% if prevdate %} 
+              <a href="/daytemp/{{prevdate}}/">
+                <img style="padding:1px;"
+                     src="/site_media/images/arrow_left.png"
+                     alt="Poprzedni dzień" />
+              </a>
+              {% endif %}
+            </td>
+            <td>
+              <b>{{ year }}/{{ month }}/{{ day }}</b>
+            </td>
+            <td>
+              {% if nextdate %} 
+              <a href="/daytemp/{{nextdate}}/">
+                <img style="padding:1px;"
+                     src="/site_media/images/arrow_right.png"
+                     alt="Następny dzień" />
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+
     </div>
 {% endblock %}

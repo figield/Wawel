@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response
 from django.http import Http404
 from django.template import RequestContext
 from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 from customclasses import Cost
 from viewsgraphs import generate_data_for_yearchart_temp_in_out
 from viewsgraphs import generate_data_for_monthchart_temp_in_out
@@ -163,7 +164,7 @@ def include(request):
 def photos(request):
     return render_to_response('polls/photos.html', {})
 
-def daytemp(request, year,  month, day):
+def daytemp(request, year, month, day):
     (x_labels, dataDict) = generate_data_for_daychart_temp_in_out(year,month, day)
 
     TempsIn = dataDict.get(IN)
@@ -178,12 +179,46 @@ def daytemp(request, year,  month, day):
     for (x_label, TempOut, TempIn) in zip(x_labels, TempsOut, TempsIn):
         data.append([x_label, TempOut, TempIn])
 
+    nextDate = get_next_day(year, month, day, 1, IN)
+    prevDate = get_next_day(year, month, day, -1, IN)
+
     return render_to_response('polls/daytemp.html', 
                               {'year':year,
                                'month':month,
                                'day':day,
-                               'data':data})
+                               'data':data,
+                               'nextdate':nextDate,
+                               'prevdate':prevDate
+                               })
 
+def get_next_day(year, month, day, daydiff, name):
+    nextDate = datetime(int(year), int(month), int(day)) + relativedelta(days=daydiff)
+    nextYear = nextDate.year
+    nextMonth = nextDate.month
+    nextDay = nextDate.day
+    nextMeasures = Measure.objects.filter(
+        Name = name,
+        MeasureDate__year = nextYear, 
+        MeasureDate__month = nextMonth,
+        MeasureDate__day = nextDay)
+    if len(nextMeasures) > 0:
+        return str(nextYear)+ "/" + str(nextMonth) + "/" + str(nextDay)
+    else:
+        return False
+
+def get_next_month(year, month, monthdiff, name):
+    nextDate = datetime(int(year), int(month), 1) + relativedelta(months=monthdiff)
+    nextYear = nextDate.year
+    nextMonth = nextDate.month
+    nextMeasures = Measure.objects.filter(
+        Name = name,
+        MeasureDate__year = nextYear, 
+        MeasureDate__month = nextMonth,)
+    if len(nextMeasures) > 0:
+        return str(nextYear)+ "/" + str(nextMonth)
+    else:
+        return False
+    
 def monthtemp(request, year, month):
     (x_labels, dataDict) = generate_data_for_monthchart_temp_in_out(year,month)
 
@@ -206,11 +241,16 @@ def monthtemp(request, year, month):
         if Date not in days:
             days.append(Date)
 
+    nextDate = get_next_month(year, month, 1, IN)
+    prevDate = get_next_month(year, month, -1, IN)
+
     return render_to_response('polls/monthtemp.html', 
                               {'year':year,  
                                'month':month,
                                'days':days,
-                               'data':data},
+                               'data':data,
+                               'nextdate':nextDate,
+                               'prevdate':prevDate},
                               context_instance=RequestContext(request))
 
 def dayenergy(request, year,  month, day):
@@ -226,11 +266,17 @@ def dayenergy(request, year,  month, day):
     data = []
     for (x_label, Elec, Thermal) in zip(x_labels, Elecs, Thermals):
         data.append([x_label, Elec, Thermal])
+
+    nextDate = get_next_day(year, month, day, 1, 'elec')
+    prevDate = get_next_day(year, month, day, -1, 'elec')
+
     return render_to_response('polls/dayenergy.html', 
                               {'year':year,
                                'month':month,
                                'day':day,
-                               'data':data})
+                               'data':data,
+                               'nextdate':nextDate,
+                               'prevdate':prevDate})
 
 def monthenergy(request, year, month):
     (x_labels, dataDict) = generate_data_for_monthbarchart_energy(year, month)
@@ -254,11 +300,16 @@ def monthenergy(request, year, month):
         if Date not in days:
             days.append(Date)
 
+    nextDate = get_next_month(year, month, 1, 'elec')
+    prevDate = get_next_month(year, month, -1, 'elec')
+
     return render_to_response('polls/monthenergy.html', 
                               {'year':year,  
                                'month':month,
                                'days':days,
-                               'data':data},
+                               'data':data,
+                               'nextdate':nextDate,
+                               'prevdate':prevDate},
                               context_instance=RequestContext(request))
 
 def yearenergy(request, year):

@@ -40,16 +40,39 @@
     </div>
 
     <div class="art-PostContent">
-      <div align="center">	
-        <br />
-        <p>{{ year }}/{{ month }}</p>
-      </div>
-      
       <div style="padding-top:20px;
                   padding-bottom:20px;" 
            align="center" 
-           id="chart_div"> </div>
+           id="chart_div"> 
+      </div>
 
+      <table style="margin-left:auto;
+                    margin-right:auto;
+                    text-align:center;">
+        <tr>
+          <td>
+            {% if prevdate %} 
+            <a href="/monthenergy/{{prevdate}}/">
+              <img style="padding:1px;"
+                   src="/site_media/images/arrow_left.png"
+                   alt="Poprzedni miesiąc" />
+            </a>
+            {% endif %}
+          </td>
+          <td>
+            <b>{{ year }}/{{ month }}</b>
+          </td>
+          <td>
+            {% if nextdate %} 
+            <a href="/monthenergy/{{nextdate}}/">
+              <img style="padding:1px;"
+                   src="/site_media/images/arrow_right.png"
+                   alt="Następny miesiąc" />
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
 
       <div class="left">
         Wybierz dzień:
