@@ -9,113 +9,105 @@
         </h2>
     </div>
 
-
     <div class="art-PostContent">
-      <div align="center">
-        
-        <div class="wrapper">
-
-          <div class="tableleft">
-
-            <div style="padding-top: 20px;
+        <table style="margin-left:auto;
+                      margin-right:auto;">
+          <tr>
+            <td valign="top" style="width: 50%;">
+              <p style="padding-top: 30px;
                         padding-left: 30px;
-                        padding-right: 30px;
+                        padding-right: 50px;
                         padding-bottom: 20px;">
-              <p>
-Założono, że 1 kWh w przypadku standardowej taryfy kosztuje 0,55 PLN. W skład tej kwoty wchodzi koszt energii elektrycznej (0,24 PLN), opłata systemowa zmienna (0,09 PLN) oraz opłata sieciowa zmienna (0,22 PLN).
-             </p>
-            </div>
-            <div style="padding-left: 30px;
-                        padding-right: 30px;">
-              <table class="gridtable">
-                <tr>
-                  <th rowspan="2">Rok</th>
-                  <th rowspan="2">Zużyta energia<br/> (kWh)</th>
-                  <th rowspan="2">Koszty<br/> (PLN)</th>
-                  <th colspan="2"> Wykresy</th>
-                </tr>
-                <tr>
-                  <th>Przebieg temp.</th>
-                  <th>Zużycie energii</th>
-                </tr>
+                Założono, że 1 kWh w przypadku standardowej taryfy kosztuje 0,55 PLN. W skład tej kwoty wchodzi koszt energii elektrycznej (0,24 PLN), opłata systemowa zmienna (0,09 PLN) oraz opłata sieciowa zmienna (0,22 PLN).
+              </p>
+              <div style="padding-left: 30px;">
+                <table class="gridtable">
+                  <tr>
+                    <th rowspan="2">Rok</th>
+                    <th rowspan="2">Zużyta energia<br/> (kWh)</th>
+                    <th rowspan="2">Koszty<br/> (PLN)</th>
+                    <th colspan="2"> Wykresy</th>
+                  </tr>
+                  <tr>
+                    <th>Przebieg temp.</th>
+                    <th>Zużycie energii</th>
+                  </tr>
                 
-                {% for yearcost in yearscosts %}
-                <tr>
-                  <td><b>{{ yearcost.period }}<b></td>
-                  <td>{{ yearcost.usage }}</td>
-                  <td>{{ yearcost.cost }}</td>
-                  <td>
-                    <a href="/yeartemp/{{ yearcost.period }}/">
-                      <b>{{ yearcost.period }}<b></a>
-                    <a href="/yeartemp/{{ yearcost.period }}/">
-                      <img src="/site_media/images/chart_line.png">
-                    </a>
-                  </td>
-                  <td>
-                    <a href="/yearenergy/{{ yearcost.period }}/">
-                    <b>{{ yearcost.period }}<b></a>
-                    <a href="/yearenergy/{{ yearcost.period }}/">
-                      <img src="/site_media/images/chart_bar.png">
-                    </a>
-                  </td>
-                </tr>
-                {% endfor %}
+                  {% for yearcost in yearscosts %}
+                  <tr>
+                    <td><b>{{ yearcost.period }}<b></td>
+                    <td>{{ yearcost.usage }}</td>
+                    <td>{{ yearcost.cost }}</td>
+                    <td>
+                      <a href="/yeartemp/{{ yearcost.period }}/">
+                        <b>{{ yearcost.period }}<b></a>
+                      <a href="/yeartemp/{{ yearcost.period }}/">
+                        <img src="/site_media/images/chart_line.png">
+                      </a>
+                    </td>
+                    <td>
+                      <a href="/yearenergy/{{ yearcost.period }}/">
+                        <b>{{ yearcost.period }}<b></a>
+                      <a href="/yearenergy/{{ yearcost.period }}/">
+                        <img src="/site_media/images/chart_bar.png">
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  
+                </table>
+              </div>
               
-              </table>
-            </div>
-
-            <div class="right" 
-                 style="padding-top: 30px;">
+              <div style="padding-left:100px; padding-top: 30px;">
               <img src="/site_media/images/wawel_service_logo.jpg" 
                    style="padding-right:15px;" />
               <img src="/site_media/images/viessmann_logo.jpg" />          
-            </div>
-
-          </div>
-
-          <div class="tableright">
-            <div style="padding-left: 30px;
-                        padding-right: 30px;">
-            <table class="gridtable">
-              <tr>
-                <th rowspan="2">Miesiąc</th>
-                <th rowspan="2">Zużyta energia<br/> (kWh)</th>
-                <th rowspan="2">Koszty<br/> (PLN)</th>
-                <th colspan="2"> Wykresy</th>
-              </tr>
-              <tr>
-                <th>Przebieg temp.</th>
-                <th>Zużycie energii</th>
-              </tr>
-              {% for monthcost in monthscosts %}
-              <tr>
-                <td><b>{{ monthcost.period }}<b></td>
-                <td>{{ monthcost.usage }}</td>
-                <td>{{ monthcost.cost }}</td>
-                <td>
-                  <a href="/monthtemp/{{ monthcost.period }}/">
-                    <b>{{ monthcost.period }}<b></a>
-                  <a href="/monthtemp/{{ monthcost.period }}/">
-                    <img src="/site_media/images/chart_line.png">
-                  </a>
-                </td>
-                <td>
-                  <a href="/monthenergy/{{ monthcost.period }}/">
-                    <b>{{ monthcost.period }}<b></a>
-                  <a href="/monthenergy/{{ monthcost.period }}/">
-                    <img src="/site_media/images/chart_bar.png">
-                  </a>
-                </td>
-              </tr>
-              {% endfor %}
-            </table>
-            </div>
-          </div>
-          
-        </div>     
-
-
-      </div>
+              </div>
+              
+            </td>
+            <td valign="top" style="width: 50%;">
+              
+              <div style="padding-top: 30px;
+                          padding-left: 30px;
+                          padding-right: 30px;">
+                <table class="gridtable">
+                  <tr>
+                    <th rowspan="2">Miesiąc</th>
+                    <th rowspan="2">Zużyta energia<br/> (kWh)</th>
+                    <th rowspan="2">Koszty<br/> (PLN)</th>
+                    <th colspan="2"> Wykresy</th>
+                  </tr>
+                  <tr>
+                    <th>Przebieg temp.</th>
+                    <th>Zużycie energii</th>
+                  </tr>
+                  {% for monthcost in monthscosts %}
+                  <tr>
+                    <td><b>{{ monthcost.period }}<b></td>
+                    <td>{{ monthcost.usage }}</td>
+                    <td>{{ monthcost.cost }}</td>
+                    <td>
+                      <a href="/monthtemp/{{ monthcost.period }}/">
+                        <b>{{ monthcost.period }}<b></a>
+                      <a href="/monthtemp/{{ monthcost.period }}/">
+                        <img src="/site_media/images/chart_line.png">
+                      </a>
+                    </td>
+                    <td>
+                      <a href="/monthenergy/{{ monthcost.period }}/">
+                        <b>{{ monthcost.period }}<b></a>
+                      <a href="/monthenergy/{{ monthcost.period }}/">
+                        <img src="/site_media/images/chart_bar.png">
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </table>
+              </div>          
+              
+            </td>     
+          </tr>
+        </table>
     </div>
    
 {% endblock %}
