@@ -117,25 +117,40 @@ function toggleDiv(id,flagit) {
     
     <div class="art-PostContent">
       <div class="wrapper">
-        <div class="left">
-          <p> Koszt zużycia energii elektrycznej:</p>
-          <div style="padding-top:0px; 
-                      padding-bottom:0px;
-                      padding-left:250px;">
+        <div class="left" 
+             onMouseOver="toggleDiv('div1',1), 
+                          toggleDiv('div2',1), 
+                          toggleDiv('div3',1), 
+                          toggleDiv('div4',1), 
+                          toggleDiv('div5',1)" 
+             onMouseOut="toggleDiv('div1',0),
+                         toggleDiv('div2',0),
+                         toggleDiv('div3',0),
+                         toggleDiv('div4',0), 
+                         toggleDiv('div5',0)">
+          <div style="padding-top:20px;
+                      width: 220px">
+            <img src="/site_media/images/icon_info.png"/> 
+              Dodatkowe objaśnienia widoczne są po najechaniu kursorem na białe pola lub na tą informację.
+          </div>
+        </div>
+
+        <div class="left" style="padding-left: 120px">
+            <p> Koszt zużycia energii elektrycznej:</p>
             <table>
               <tr>
                 <td>Dzienny:</td>
-                <td><div class="measure"> {{day_cost}} </div></td>
+                <td><div class="measure60"> {{day_cost}} </div></td>
                 <td>zł.</td>
               </tr>
               <tr>
                 <td>Miesięczny:</td>
-                <td><div class="measure"> {{month_cost}} </div></td>
+                <td><div class="measure60"> {{month_cost}} </div></td>
                 <td>zł.</td>
               </tr>
             </table>
-          </div>
         </div>
+
         <div class="right">
           <div style="padding-top:10px;">
             <img src="/site_media/images/wawel_service_logo.jpg" 
@@ -146,7 +161,7 @@ function toggleDiv(id,flagit) {
       </div>     
     </div>
 
-{% endblock %}    
+{% endblock %}
 
 
     

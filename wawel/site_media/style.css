@@ -1354,6 +1354,31 @@ div.measure
     margin-top: 5px;
 }
 
+div.measure80
+{
+    color: #000;
+    background-color:#fff;
+    text-align: right;
+    border-style:solid;
+    border-width:2px;
+    padding:3px 3px 3px 3px;
+    width:80px;
+    margin-top: 5px;
+}
+
+div.measure60
+{
+    color: #000;
+    background-color:#fff;
+    text-align: right;
+    border-style:solid;
+    border-width:2px;
+    padding:3px 3px 3px 3px;
+    width:60px;
+    margin-top: 5px;
+}
+
+
 div.left {
     /*width: 60%;*/
     heigth: 100%;
