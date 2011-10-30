@@ -4,7 +4,7 @@
    
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
-    <title>Nowoczesne ciepłe domy</title>
+    <title>Dom dla każdego</title>
 
     <script type="text/javascript" src="/site_media/script.js"></script>
     <script type="text/javascript" src="/site_media/prototype.js"></script>
@@ -16,9 +16,31 @@
       };
     </script>
 
+    <script language="Javascript">
+      function toggleDiv(id,flagit) {
+      if (flagit=="1"){
+      if (document.layers) document.layers[''+id+''].visibility = "show"
+      else if (document.all) document.all[''+id+''].style.visibility = "visible"
+      else if (document.getElementById) document.getElementById(''+id+'').style.visibility = "visible"
+      }
+      else if (flagit=="0"){
+      if (document.layers) document.layers[''+id+''].visibility = "hide"
+      else if (document.all) document.all[''+id+''].style.visibility = "hidden"
+      else if (document.getElementById) document.getElementById(''+id+'').style.visibility = "hidden"
+      }
+      }
+    </script>
+
    <link rel="stylesheet" href="/site_media/style.css" type="text/css" media="screen" /> 
     <!--[if IE 6]><link rel="stylesheet" href="/site_media/style.ie6.css" type="text/css" media="screen" /><![endif]-->
     <!--[if IE 7]><link rel="stylesheet" href="/site_media/style.ie7.css" type="text/css" media="screen" /><![endif]-->
+
+    <style type="text/css">
+      #div1 {position:absolute; top: 190px; left: 700px; width:130px; visibility:hidden;
+             background-color:#b0c4de; border:1px solid #0000ff; padding: 5px}
+      #div2 {position:absolute; top: 320px; left: 700px; width:130px; visibility:hidden;
+             background-color:#b0c4de; border:1px solid #0000ff; padding: 5px}
+    </style>
 
 </head>
 
@@ -44,32 +66,49 @@
 
   <div style="position:relative;
               top:-60px;">
+
     <div style="position:relative; 
                 left:150px; 
                 top:150px; 
-                color:#000;">
+                color:#000;"
+         onMouseOver="toggleDiv('div1',1)" 
+         onMouseOut="toggleDiv('div1',0)">
       <div id="update_temp_out">
         <b>Temperatura na zewnątrz: {{out}} &deg;C</b>
       </div>
-    </div>       
+    </div> 
     <div style="position:relative; 
                 left:150px; 
-                top:145px;">
+                top:145px;"
+         onMouseOver="toggleDiv('div1',1)" 
+         onMouseOut="toggleDiv('div1',0)">
       <img src="/site_media/images/blink.gif" />
     </div>
     
+    <div id="div1">
+      Temperatura mierzona na zewnątrz budynku
+    </div>
+
     <div style="position:relative; 
                 left:140px; 
                 top:250px; 
-                color:#000;">
+                color:#000;"
+         onMouseOver="toggleDiv('div2',1)" 
+         onMouseOut="toggleDiv('div2',0)">
       <div id="update_temp_in">
         <b>Temperatura wewnątrz: {{in}} &deg;C</b>
       </div>
     </div>
     <div style="position:relative; 
                 left:240px; 
-                top:250px;">
+                top:250px;"
+         onMouseOver="toggleDiv('div2',1)" 
+         onMouseOut="toggleDiv('div2',0)">
       <img src="/site_media/images/blink.gif" />
+    </div>
+
+    <div id="div2">
+      Temperatura mierzona w budynku
     </div>
 
     <img style="padding:1px;
@@ -77,9 +116,19 @@
                 background-color:#000000;" 
          src="/site_media/images/dom1.jpg" />
   </div>  
-
+    <div style="position:relative;
+              top:-50px;
+              padding-left: 620px" 
+       onMouseOver="toggleDiv('div1',1), 
+                    toggleDiv('div2',1)" 
+       onMouseOut="toggleDiv('div1',0),
+                   toggleDiv('div2',0)">
+    <div style="padding-top:0px;">
+      <img src="/site_media/images/icon_info.png"/>
+    </div>
+  </div>
   <div style="position:relative;
-              top:-30px;">
+              top:-50px;">
     <table class="gridtable" style="margin-left:auto;
                                     margin-right:auto;
                                     text-align:center;">
