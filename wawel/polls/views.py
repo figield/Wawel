@@ -7,16 +7,8 @@ from django.template import RequestContext
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from customclasses import Cost
-from viewsgraphs import generate_data_for_yearchart_temp_in_out
-from viewsgraphs import generate_data_for_monthchart_temp_in_out
-from viewsgraphs import generate_data_for_daychart_temp_in_out
-from viewsgraphs import generate_data_for_yearbarchart_energy
-from viewsgraphs import generate_data_for_monthbarchart_energy
-from viewsgraphs import generate_data_for_daybarchart_energy
+from viewsgraphs import * 
 import random
-
-IN = 'WEW'
-OUT = 'ZEW'
 
 # For Ajax requests in the include.html
 def update_temp(request, id):
@@ -67,9 +59,14 @@ def update_temp2(request, id):
             return render_to_response('polls/temp.html', {'out':Temp + R})
 
 def index(request):
+
+    year = date.today().year
+    month = date.today().month
+    day = date.today().day
+
     Outs = LastMeasure.objects.filter( UnitOfMeasure = "C", 
                                        Name = OUT,  
-                                       MeasureDate__year = date.today().year
+                                       MeasureDate__year = year
                                        ).order_by('MeasureDate')
     if len(Outs) == 0:
         Out = 0
@@ -78,17 +75,17 @@ def index(request):
 
     Ins = LastMeasure.objects.filter( UnitOfMeasure = "C", 
                                       Name = IN,  
-                                      MeasureDate__year = date.today().year
+                                      MeasureDate__year = year
                                       ).order_by('MeasureDate')
     if len(Ins) == 0:
         In = 0
     else:
         In = Ins[len(Ins) -1 ].Value
     
-    Elecs = Measure.objects.filter( UnitOfMeasure = "kWh", 
-                                    Name = "elec",  
-                                    MeasureDate__year = date.today().year
-                                    ).order_by('MeasureDate')
+    Elecs = LastMeasure.objects.filter( UnitOfMeasure = "kWh", 
+                                        Name = "elec",  
+                                        MeasureDate__year = year
+                                        ).order_by('MeasureDate')
     if len(Elecs) == 0:
         Elec = 0
     else:
@@ -96,37 +93,46 @@ def index(request):
 
     Thermals = LastMeasure.objects.filter( UnitOfMeasure = "GJ", 
                                            Name = "thermal",  
-                                           MeasureDate__year = date.today().year
+                                           MeasureDate__year = year
                                            ).order_by('MeasureDate')
     if len(Thermals) == 0:
         ThermalGJ = 0
     else:
         ThermalGJ = Thermals[len(Thermals) -1 ].Value
-    # Conversion base : 1 GJ = 277.77777777778 kWh 
-    ThermalKWh = round(ThermalGJ * 277.77777777778, 2) 
+    ThermalKWh = round(ThermalGJ * GJ, 2) 
     if Elec == 0:
         cop = 0
     else:
         cop = round(ThermalKWh / Elec, 3)
 
-    day_cost = 5.0
-    month_cost = 30 * 5.0
+    (DayCost, DUsage) = calculate_cost_for_prev_day(year, month, day)
+    if DayCost == 0:
+        DayCost = 5.0 # Estimated cost
 
-    return render_to_response('polls/index.html', 
+    (MonthCost, MUsage) = calculate_cost_for_prev_month(year, month)
+    if MonthCost == 0:
+        MonthCost = 150.0 # Estimated cost
+
+    return render_to_response('polls/index.html', # TODO: add comments
                               {'out':Out,  
                                'in':In,  
                                'elec':Elec,  
                                'thermalgj':ThermalGJ,  
                                'thermalkwh':ThermalKWh, 
                                'cop':cop,
-                               'day_cost':day_cost,
-                               'month_cost':month_cost
+                               'day_cost':DayCost,
+                               'month_cost':MonthCost
                                })
 
 def include(request):
+
+    year = date.today().year
+    month = date.today().month
+    day = date.today().day
+
     Outs = LastMeasure.objects.filter( UnitOfMeasure = "C", 
                                        Name = OUT,  
-                                       MeasureDate__year = date.today().year
+                                       MeasureDate__year = year
                                        ).order_by('MeasureDate')
     if len(Outs) == 0:
         Out = 0
@@ -135,28 +141,28 @@ def include(request):
 
     Ins = LastMeasure.objects.filter( UnitOfMeasure = "C", 
                                       Name = IN,  
-                                      MeasureDate__year = date.today().year
+                                      MeasureDate__year = year
                                       ).order_by('MeasureDate')
     if len(Ins) == 0:
         In = 0
     else:
         In = Ins[len(Ins) -1 ].Value
-    
-    Elecs = Measure.objects.filter( UnitOfMeasure = "kWh", 
-                                    Name = "elec",  
-                                    MeasureDate__year = date.today().year
-                                    ).order_by('MeasureDate')
 
-    day_cost = 5.0
-    month_cost = 30 * 5.0
+    (DayCost, DUsage) = calculate_cost_for_prev_day(year, month, day)
+    if DayCost == 0:
+        DayCost = 5.0 # Estimated cost
+
+    (MonthCost, MUsage) = calculate_cost_for_prev_month(year, month)
+    if MonthCost == 0:
+        MonthCost = 150.0 # Estimated cost
 
     (Yearscosts, Monthscosts) = calculate_costs()
 
-    return render_to_response('polls/include.html', 
+    return render_to_response('polls/include.html', # TODO: fix template
                               {'out':Out,  
                                'in':In,  
-                               'day_cost':day_cost,
-                               'month_cost':month_cost,
+                               'day_cost':DayCost,
+                               'month_cost':MonthCost,
                                'yearscosts':Yearscosts,
                                'monthscosts':Monthscosts
                                })
@@ -191,7 +197,10 @@ def daytemp(request, year, month, day):
                                'prevdate':prevDate
                                })
 
+# TODO: move to file with lib functions
+
 def get_next_day(year, month, day, daydiff, name):
+    # TODO: validate!
     nextDate = datetime(int(year), int(month), int(day)) + relativedelta(days=daydiff)
     nextYear = nextDate.year
     nextMonth = nextDate.month
@@ -207,6 +216,7 @@ def get_next_day(year, month, day, daydiff, name):
         return False
 
 def get_next_month(year, month, monthdiff, name):
+    # TODO: validate!
     nextDate = datetime(int(year), int(month), 1) + relativedelta(months=monthdiff)
     nextYear = nextDate.year
     nextMonth = nextDate.month
@@ -377,6 +387,7 @@ def selectday_energy(request):
     return HttpResponseRedirect('/dayenergy/'+ Day +'/') 
 
 def handle_value(request):
+    # TODO: validate!
     name = request.GET['name']
     value = float(request.GET['value'])
     unitOfMeasure = request.GET['unit']
@@ -454,7 +465,6 @@ def calculate_costs():
                 MMax = measure.Value            
             mdict[month] = (MMin, MMax)
     
-    CostPerkWh = 0.55
     y_keys = ydict.keys()
     y_keys.sort()
     Yearscosts = []
@@ -474,6 +484,65 @@ def calculate_costs():
                                 MUsage,
                                 round(MUsage * CostPerkWh, 2)))
     return (Yearscosts, Monthscosts)
+
+def calculate_month_cost(Year, Month):
+    MElecMin = 0
+    MElecMax = 0
+    Elecs = Measure.objects.filter( UnitOfMeasure = "kWh", 
+                                    Name = "elec",  
+                                    MeasureDate__year = Year,
+                                    MeasureDate__month = Month
+                                    ).order_by('MeasureDate')
+    for measure in Elecs:
+        if MElecMax == 0:
+            MElecMin = measure.Value
+            MElecMax = measure.Value
+        else:
+            if MElecMin > measure.Value:
+                MElecMin = measure.Value
+            if MElecMax < measure.Value:
+                MElecMax = measure.Value
+
+    MUsage = MElecMax - MElecMin
+    MonthCost = round(MUsage * CostPerkWh, 2)
+    return (MonthCost, MUsage)
+
+def calculate_cost_for_prev_month(year, month):
+    prevDate = datetime(year, month, 1) + relativedelta(months=-1)
+    prevYear = prevDate.year
+    prevMonth = prevDate.month
+    return calculate_month_cost(prevYear, prevMonth)
+
+def calculate_day_cost(Year, Month, Day):
+    DElecMin = 0
+    DElecMax = 0
+    Elecs = Measure.objects.filter( UnitOfMeasure = "kWh", 
+                                    Name = "elec",  
+                                    MeasureDate__year = Year,
+                                    MeasureDate__month = Month,
+                                    MeasureDate__day = Day
+                                    ).order_by('MeasureDate')
+    for measure in Elecs:
+        if DElecMax == 0:
+            DElecMin = measure.Value
+            DElecMax = measure.Value
+        else:
+            if DElecMin > measure.Value:
+                DElecMin = measure.Value
+            if DElecMax < measure.Value:
+                # TODO: fix Max value - take the Min from next day
+                DElecMax = measure.Value
+
+    MUsage = DElecMax - DElecMin
+    DayCost = round(MUsage * CostPerkWh, 2)
+    return (DayCost, MUsage)
+
+def calculate_cost_for_prev_day(year, month, day):
+    prevDate = datetime(year, month, day) + relativedelta(days=-1)
+    prevYear = prevDate.year
+    prevMonth = prevDate.month
+    prevDay = prevDate.day
+    return calculate_day_cost(prevYear, prevMonth, prevDay)
 
 def contact(request):            
     return render_to_response('polls/contact.html', {})

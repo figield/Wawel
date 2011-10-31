@@ -2,8 +2,11 @@ from polls.models import Measure
 from datetime import date, datetime
 from django.db.models import Q
 
+# TODO: move to file with globals
 IN = 'WEW'
 OUT = 'ZEW'
+GJ = 277.77777777778 # Conversion base : 1 GJ = 277.77777777778 kWh 
+CostPerkWh = 0.55
 
 def generate_data_for_yearchart_temp_in_out(year):
     dict = {}
@@ -76,7 +79,7 @@ def generate_data_for_yearbarchart_energy(year):
         (Min, Max) = dict.get(month)
         (Min2, Max2) = dict2.get(month)
         data[name].append(round(Max - Min, 4))
-        data[name2].append(round((Max2 - Min2) * 277.77777777778, 4))
+        data[name2].append(round((Max2 - Min2) * GJ, 4))
     return (x_labels, data)
 
 def generate_data_for_monthchart_temp_in_out(year, month):
@@ -156,7 +159,7 @@ def generate_data_for_monthbarchart_energy(year, month):
         (Min, Max) = dict.get(day)
         (Min2, Max2) = dict2.get(day)
         data[name].append(round(Max - Min, 4))
-        data[name2].append(round((Max2 - Min2) * 277.77777777778, 4))
+        data[name2].append(round((Max2 - Min2) * GJ, 4))
     return (x_labels, data)
 
 
@@ -202,15 +205,16 @@ def generate_data_for_daybarchart_energy(year, month, day):
     x_labels.sort()
     data[name] = []
     data[name2] = []
+    # TODO: first previous value should be taken from previous day
     PrevVal = 0
     PrevVal2 = 0
     for Time in x_labels:
         PrevVal = dict.get(Time)
-        PrevVal2 = dict2.get(Time) * 277.77777777778
+        PrevVal2 = dict2.get(Time) * GJ
         break
     for Time in x_labels:
         Val = dict.get(Time)
-        Val2 = dict2.get(Time) * 277.77777777778
+        Val2 = dict2.get(Time) * GJ
         data[name].append(round(Val - PrevVal, 4))
         data[name2].append(round(Val2 - PrevVal2, 4))
         PrevVal = Val
