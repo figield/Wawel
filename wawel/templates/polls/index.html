@@ -31,6 +31,7 @@ function toggleDiv(id,flagit) {
   #div3 {position:absolute; top: 100px; right: 4px; width:130px; visibility:hidden}
   #div4 {position:absolute; top: 240px; right: 4px; width:130px; visibility:hidden}
   #div5 {position:absolute; top: 350px; right: 4px; width:130px; visibility:hidden}
+
 </style>
 
 {% endblock %}
@@ -131,7 +132,7 @@ function toggleDiv(id,flagit) {
           <div style="padding-top:20px;
                       width: 220px">
             <img src="/site_media/images/icon_info.png"/> 
-              Dodatkowe objaśnienia widoczne są po najechaniu kursorem na białe pola lub na tą informację.
+              Dodatkowe objaśnienia widoczne są po najechaniu kursorem na powyższe parametry lub na tą informację.
           </div>
         </div>
 
@@ -139,12 +140,12 @@ function toggleDiv(id,flagit) {
             <p> Koszt zużycia energii elektrycznej:</p>
             <table>
               <tr>
-                <td>Dzienny:</td>
+                <td>Bieżący dzień:</td>
                 <td><div class="measure60"> {{day_cost}} </div></td>
                 <td>zł.</td>
               </tr>
               <tr>
-                <td>Miesięczny:</td>
+                <td>Bieżący miesiąc:</td>
                 <td><div class="measure60"> {{month_cost}} </div></td>
                 <td>zł.</td>
               </tr>
