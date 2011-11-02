@@ -10,6 +10,8 @@ from customclasses import Cost
 from viewsgraphs import * 
 import random
 
+# TODO: Add content to Contact page
+
 # For Ajax requests in the include.html
 def update_temp(request, id):
 
@@ -105,13 +107,8 @@ def index(request):
     else:
         cop = round(ThermalKWh / Elec, 3)
 
-    (DayCost, DUsage) = calculate_cost_for_prev_day(year, month, day)
-    if DayCost == 0:
-        DayCost = 5.0 # Estimated cost
-
-    (MonthCost, MUsage) = calculate_cost_for_prev_month(year, month)
-    if MonthCost == 0:
-        MonthCost = 150.0 # Estimated cost
+    (DayCost, DUsage) = calculate_day_cost(year, month, day)
+    (MonthCost, MUsage) = calculate_month_cost(year, month)
 
     return render_to_response('polls/index.html', # TODO: add comments
                               {'out':Out,  
@@ -148,13 +145,8 @@ def include(request):
     else:
         In = Ins[len(Ins) -1 ].Value
 
-    (DayCost, DUsage) = calculate_cost_for_prev_day(year, month, day)
-    if DayCost == 0:
-        DayCost = 5.0 # Estimated cost
-
-    (MonthCost, MUsage) = calculate_cost_for_prev_month(year, month)
-    if MonthCost == 0:
-        MonthCost = 150.0 # Estimated cost
+    (DayCost, DUsage) = calculate_day_cost(year, month, day)
+    (MonthCost, MUsage) = calculate_month_cost(year, month)
 
     (Yearscosts, Monthscosts) = calculate_costs()
 
@@ -170,6 +162,7 @@ def include(request):
 def photos(request):
     return render_to_response('polls/photos.html', {})
 
+# TODO: validate date
 def daytemp(request, year, month, day):
     (x_labels, dataDict) = generate_data_for_daychart_temp_in_out(year,month, day)
 
@@ -187,6 +180,7 @@ def daytemp(request, year, month, day):
 
     nextDate = get_next_day(year, month, day, 1, IN)
     prevDate = get_next_day(year, month, day, -1, IN)
+    # TODO: Add back arrow to month
 
     return render_to_response('polls/daytemp.html', 
                               {'year':year,
@@ -228,7 +222,8 @@ def get_next_month(year, month, monthdiff, name):
         return str(nextYear)+ "/" + str(nextMonth)
     else:
         return False
-    
+
+# TODO: validate date    
 def monthtemp(request, year, month):
     (x_labels, dataDict) = generate_data_for_monthchart_temp_in_out(year,month)
 
@@ -263,6 +258,7 @@ def monthtemp(request, year, month):
                                'prevdate':prevDate},
                               context_instance=RequestContext(request))
 
+# TODO: validate date
 def dayenergy(request, year,  month, day):
     (x_labels, dataDict) = generate_data_for_daybarchart_energy(year,month, day)
     Elecs = dataDict.get('elec')
@@ -279,6 +275,7 @@ def dayenergy(request, year,  month, day):
 
     nextDate = get_next_day(year, month, day, 1, 'elec')
     prevDate = get_next_day(year, month, day, -1, 'elec')
+    # TODO: Add back arrow to month
 
     return render_to_response('polls/dayenergy.html', 
                               {'year':year,
@@ -288,6 +285,7 @@ def dayenergy(request, year,  month, day):
                                'nextdate':nextDate,
                                'prevdate':prevDate})
 
+# TODO: validate date
 def monthenergy(request, year, month):
     (x_labels, dataDict) = generate_data_for_monthbarchart_energy(year, month)
 
@@ -322,6 +320,7 @@ def monthenergy(request, year, month):
                                'prevdate':prevDate},
                               context_instance=RequestContext(request))
 
+# TODO: validate date
 def yearenergy(request, year):
     months = MeasureMonth.objects.all()
     (x_labels, dataDict) = generate_data_for_yearbarchart_energy(year)
@@ -342,6 +341,7 @@ def yearenergy(request, year):
                                'data':data},
                               context_instance=RequestContext(request))
 
+# TODO: validate date
 def yeartemp(request, year):
     months = MeasureMonth.objects.all()
     (x_labels, dataDict) = generate_data_for_yearchart_temp_in_out(year)
