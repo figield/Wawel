@@ -1,12 +1,7 @@
 from polls.models import Measure
 from datetime import date, datetime
 from django.db.models import Q
-
-# TODO: move to file with globals
-IN = 'WEW'
-OUT = 'ZEW'
-GJ = 277.77777777778 # Conversion base : 1 GJ = 277.77777777778 kWh 
-CostPerkWh = 0.55
+from configuration import * 
 
 def generate_data_for_yearchart_temp_in_out(year):
     dict = {}

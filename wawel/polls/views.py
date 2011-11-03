@@ -5,12 +5,10 @@ from django.shortcuts import render_to_response
 from django.http import Http404
 from django.template import RequestContext
 from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
-from customclasses import Cost
-from viewsgraphs import * 
+from graphs import * 
+from calculation import * 
+from configuration import * 
 import random
-
-# TODO: Add content to Contact page
 
 # For Ajax requests in the include.html
 def update_temp(request, id):
@@ -110,7 +108,7 @@ def index(request):
     (DayCost, DUsage) = calculate_day_cost(year, month, day)
     (MonthCost, MUsage) = calculate_month_cost(year, month)
 
-    return render_to_response('polls/index.html', # TODO: add comments
+    return render_to_response('polls/index.html',
                               {'out':Out,  
                                'in':In,  
                                'elec':Elec,  
@@ -162,8 +160,10 @@ def include(request):
 def photos(request):
     return render_to_response('polls/photos.html', {})
 
-# TODO: validate date
 def daytemp(request, year, month, day):
+    if not validate_date_ymd(year, month, day):
+        return HttpResponseRedirect('/') 
+
     (x_labels, dataDict) = generate_data_for_daychart_temp_in_out(year,month, day)
 
     TempsIn = dataDict.get(IN)
@@ -191,40 +191,10 @@ def daytemp(request, year, month, day):
                                'prevdate':prevDate
                                })
 
-# TODO: move to file with lib functions
-
-def get_next_day(year, month, day, daydiff, name):
-    # TODO: validate!
-    nextDate = datetime(int(year), int(month), int(day)) + relativedelta(days=daydiff)
-    nextYear = nextDate.year
-    nextMonth = nextDate.month
-    nextDay = nextDate.day
-    nextMeasures = Measure.objects.filter(
-        Name = name,
-        MeasureDate__year = nextYear, 
-        MeasureDate__month = nextMonth,
-        MeasureDate__day = nextDay)
-    if len(nextMeasures) > 0:
-        return str(nextYear)+ "/" + str(nextMonth) + "/" + str(nextDay)
-    else:
-        return False
-
-def get_next_month(year, month, monthdiff, name):
-    # TODO: validate!
-    nextDate = datetime(int(year), int(month), 1) + relativedelta(months=monthdiff)
-    nextYear = nextDate.year
-    nextMonth = nextDate.month
-    nextMeasures = Measure.objects.filter(
-        Name = name,
-        MeasureDate__year = nextYear, 
-        MeasureDate__month = nextMonth)
-    if len(nextMeasures) > 0:
-        return str(nextYear)+ "/" + str(nextMonth)
-    else:
-        return False
-
-# TODO: validate date    
 def monthtemp(request, year, month):
+    if not validate_date_ym(year, month):
+        return HttpResponseRedirect('/') 
+
     (x_labels, dataDict) = generate_data_for_monthchart_temp_in_out(year,month)
 
     TempsIn = dataDict.get(IN)
@@ -258,8 +228,10 @@ def monthtemp(request, year, month):
                                'prevdate':prevDate},
                               context_instance=RequestContext(request))
 
-# TODO: validate date
-def dayenergy(request, year,  month, day):
+def dayenergy(request, year, month, day):
+    if not validate_date_ymd(year, month, day):
+        return HttpResponseRedirect('/') 
+
     (x_labels, dataDict) = generate_data_for_daybarchart_energy(year,month, day)
     Elecs = dataDict.get('elec')
     if Elecs == None:
@@ -285,8 +257,10 @@ def dayenergy(request, year,  month, day):
                                'nextdate':nextDate,
                                'prevdate':prevDate})
 
-# TODO: validate date
 def monthenergy(request, year, month):
+    if not validate_date_ym(year, month):
+        return HttpResponseRedirect('/') 
+
     (x_labels, dataDict) = generate_data_for_monthbarchart_energy(year, month)
 
     Elecs = dataDict.get('elec')
@@ -320,8 +294,10 @@ def monthenergy(request, year, month):
                                'prevdate':prevDate},
                               context_instance=RequestContext(request))
 
-# TODO: validate date
 def yearenergy(request, year):
+    if not validate_year(year):
+        return HttpResponseRedirect('/') 
+
     months = MeasureMonth.objects.all()
     (x_labels, dataDict) = generate_data_for_yearbarchart_energy(year)
 
@@ -341,8 +317,10 @@ def yearenergy(request, year):
                                'data':data},
                               context_instance=RequestContext(request))
 
-# TODO: validate date
 def yeartemp(request, year):
+    if not validate_year(year):
+        return HttpResponseRedirect('/') 
+
     months = MeasureMonth.objects.all()
     (x_labels, dataDict) = generate_data_for_yearchart_temp_in_out(year)
 
@@ -387,7 +365,6 @@ def selectday_energy(request):
     return HttpResponseRedirect('/dayenergy/'+ Day +'/') 
 
 def handle_value(request):
-    # TODO: validate!
     name = request.GET['name']
     value = float(request.GET['value'])
     unitOfMeasure = request.GET['unit']
@@ -409,7 +386,6 @@ def handle_value(request):
         return render_to_response('polls/insert.html', {'measure':measure})
 
     measure.save()
-
     lastMeasures = LastMeasure.objects.filter(UnitOfMeasure = unitOfMeasure, 
                                              Name = name)
     if len(lastMeasures) > 0:
@@ -420,7 +396,6 @@ def handle_value(request):
                               MeasureDate = measureDate, 
                               UnitOfMeasure = unitOfMeasure)
     lastMeasure.save()
-
     date = measure.MeasureDate.strftime("%Y/%m")
     measureMonths = MeasureMonth.objects.filter(Month = date) 
     if len(measureMonths) == 0:
@@ -434,115 +409,6 @@ def costs(request):
     return render_to_response('polls/costs.html', 
                               {'yearscosts':Yearscosts,
                                'monthscosts':Monthscosts})
-
-def calculate_costs():
-    ydict = {}
-    mdict = {}
-    All = Measure.objects.filter(Name = 'elec').order_by('MeasureDate')
-    for measure in All:
-
-        year = measure.MeasureDate.strftime("%Y")
-        YTuple = ydict.get(year)
-        if YTuple == None:
-            ydict[year] = (measure.Value, measure.Value)
-        else:
-            (Min, Max) = YTuple
-            if Min > measure.Value:
-                Min = measure.Value
-            if Max < measure.Value:
-                Max = measure.Value            
-            ydict[year] = (Min, Max)
-
-        month = measure.MeasureDate.strftime("%Y/%m")
-        MTuple = mdict.get(month)
-        if MTuple == None:
-            mdict[month] = (measure.Value, measure.Value)
-        else:
-            (MMin, MMax) = MTuple
-            if MMin > measure.Value:
-                MMin = measure.Value
-            if MMax < measure.Value:
-                MMax = measure.Value            
-            mdict[month] = (MMin, MMax)
-    
-    y_keys = ydict.keys()
-    y_keys.sort()
-    Yearscosts = []
-    for y_key in y_keys:
-        (YMin, YMax) = ydict.get(y_key)
-        YUsage = YMax - YMin
-        Yearscosts.append(Cost(y_key,
-                               YUsage,
-                               round(YUsage * CostPerkWh, 2)))
-    m_keys = mdict.keys()
-    m_keys.sort()
-    Monthscosts = []
-    for m_key in m_keys:
-        (MMin, MMax) = mdict.get(m_key)
-        MUsage = MMax - MMin
-        Monthscosts.append(Cost(m_key,
-                                MUsage,
-                                round(MUsage * CostPerkWh, 2)))
-    return (Yearscosts, Monthscosts)
-
-def calculate_month_cost(Year, Month):
-    MElecMin = 0
-    MElecMax = 0
-    Elecs = Measure.objects.filter( UnitOfMeasure = "kWh", 
-                                    Name = "elec",  
-                                    MeasureDate__year = Year,
-                                    MeasureDate__month = Month
-                                    ).order_by('MeasureDate')
-    for measure in Elecs:
-        if MElecMax == 0:
-            MElecMin = measure.Value
-            MElecMax = measure.Value
-        else:
-            if MElecMin > measure.Value:
-                MElecMin = measure.Value
-            if MElecMax < measure.Value:
-                MElecMax = measure.Value
-
-    MUsage = MElecMax - MElecMin
-    MonthCost = round(MUsage * CostPerkWh, 2)
-    return (MonthCost, MUsage)
-
-def calculate_cost_for_prev_month(year, month):
-    prevDate = datetime(year, month, 1) + relativedelta(months=-1)
-    prevYear = prevDate.year
-    prevMonth = prevDate.month
-    return calculate_month_cost(prevYear, prevMonth)
-
-def calculate_day_cost(Year, Month, Day):
-    DElecMin = 0
-    DElecMax = 0
-    Elecs = Measure.objects.filter( UnitOfMeasure = "kWh", 
-                                    Name = "elec",  
-                                    MeasureDate__year = Year,
-                                    MeasureDate__month = Month,
-                                    MeasureDate__day = Day
-                                    ).order_by('MeasureDate')
-    for measure in Elecs:
-        if DElecMax == 0:
-            DElecMin = measure.Value
-            DElecMax = measure.Value
-        else:
-            if DElecMin > measure.Value:
-                DElecMin = measure.Value
-            if DElecMax < measure.Value:
-                # TODO: fix Max value - take the Min from next day
-                DElecMax = measure.Value
-
-    MUsage = DElecMax - DElecMin
-    DayCost = round(MUsage * CostPerkWh, 2)
-    return (DayCost, MUsage)
-
-def calculate_cost_for_prev_day(year, month, day):
-    prevDate = datetime(year, month, day) + relativedelta(days=-1)
-    prevYear = prevDate.year
-    prevMonth = prevDate.month
-    prevDay = prevDate.day
-    return calculate_day_cost(prevYear, prevMonth, prevDay)
 
 def contact(request):            
     return render_to_response('polls/contact.html', {})
