@@ -35,13 +35,6 @@
     <!--[if IE 6]><link rel="stylesheet" href="/site_media/style.ie6.css" type="text/css" media="screen" /><![endif]-->
     <!--[if IE 7]><link rel="stylesheet" href="/site_media/style.ie7.css" type="text/css" media="screen" /><![endif]-->
 
-    <style type="text/css">
-      #div1 {position:relative; top: 210px; left: 450px; width:130px; visibility:hidden;
-             background-color:#b0c4de; border:1px solid #0000ff; padding: 5px}
-      #div2 {position:relative; top: 300px; left: 450px; width:130px; visibility:hidden;
-             background-color:#b0c4de; border:1px solid #0000ff; padding: 5px}
-    </style>
-
 </head>
 
 <body style="background-color: #ffffff;
@@ -56,12 +49,12 @@
     }  
   </script>
 
-  <p style="font-size: 15px;"><b>Średni koszt ogrzewania to:</b></p>
+  <p style="font-size: 15px;"><b>Koszt ogrzewania:</b></p>
 
   <div style="color: red;
               font-size: 24px;">
-    <p><b>{{day_cost}} zł dziennie</b></p>
-    <p><b>{{month_cost}} zł miesięcznie</b></p>
+    <p><b>{{day_cost}} zł za bieżący dzień</b></p>
+    <p><b>{{month_cost}} zł za bieżacy miesiąc</b></p>
   </div>
 
   <div style="position:relative;
@@ -84,11 +77,16 @@
          onMouseOut="toggleDiv('div1',0)">
       <img src="/site_media/images/blink.gif" />
     </div>
-    
-    <div id="div1">
-      Temperatura mierzona na zewnątrz budynku
+    <div style="position:relative; 
+                left:150px; 
+                top:215px;">
+      <div id="div1"
+           style="margin:0 auto; width:130px; visibility:hidden;
+                  background-color:#b0c4de; border:1px solid #0000ff; padding: 5px">
+        Temperatura mierzona na zewnątrz budynku
+      </div>
     </div>
-
+    
     <div style="position:relative; 
                 left:140px; 
                 top:290px; 
@@ -106,15 +104,20 @@
          onMouseOut="toggleDiv('div2',0)">
       <img src="/site_media/images/blink.gif" />
     </div>
-
-    <div id="div2">
-      Temperatura mierzona w budynku
+    <div style="position:relative; 
+                left:240px; 
+                top:300px;">
+         <div id="div2"
+              style="margin:0 auto; width:130px; visibility:hidden;
+                     background-color:#b0c4de; border:1px solid #0000ff; padding: 5px">
+           Temperatura mierzona w budynku
+         </div>
     </div>
-
     <img style="padding:1px;
                 border:1px solid #B5B8AD;
                 background-color:#000000;" 
          src="/site_media/images/dom1.jpg" />
+
   </div>  
   <div style="position:relative;
               top:-150px;

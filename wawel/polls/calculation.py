@@ -99,7 +99,6 @@ def calculate_day_cost(Year, Month, Day):
             if DElecMin > measure.Value:
                 DElecMin = measure.Value
             if DElecMax < measure.Value:
-                # TODO: fix Max value - take the Min from next day
                 DElecMax = measure.Value
 
     MUsage = DElecMax - DElecMin

@@ -148,7 +148,7 @@ def include(request):
 
     (Yearscosts, Monthscosts) = calculate_costs()
 
-    return render_to_response('polls/include.html', # TODO: fix template
+    return render_to_response('polls/include.html',
                               {'out':Out,  
                                'in':In,  
                                'day_cost':DayCost,
