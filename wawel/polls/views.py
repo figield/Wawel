@@ -105,8 +105,8 @@ def index(request):
     else:
         cop = round(ThermalKWh / Elec, 3)
 
-    (DayCost, DUsage) = calculate_day_cost(year, month, day)
-    (MonthCost, MUsage) = calculate_month_cost(year, month)
+    #(DayCost, DUsage) = calculate_day_cost(year, month, day)
+    #(MonthCost, MUsage) = calculate_month_cost(year, month)
 
     return render_to_response('polls/index.html',
                               {'out':Out,  
@@ -115,8 +115,8 @@ def index(request):
                                'thermalgj':ThermalGJ,  
                                'thermalkwh':ThermalKWh, 
                                'cop':cop,
-                               'day_cost':DayCost,
-                               'month_cost':MonthCost
+                               'day_cost':5, #DayCost,
+                               'month_cost':150 #MonthCost
                                })
 
 def include(request):
@@ -143,16 +143,16 @@ def include(request):
     else:
         In = Ins[len(Ins) -1 ].Value
 
-    (DayCost, DUsage) = calculate_day_cost(year, month, day)
-    (MonthCost, MUsage) = calculate_month_cost(year, month)
+    #(DayCost, DUsage) = calculate_day_cost(year, month, day)
+    #(MonthCost, MUsage) = calculate_month_cost(year, month)
 
     (Yearscosts, Monthscosts) = calculate_costs()
 
     return render_to_response('polls/include.html',
                               {'out':Out,  
                                'in':In,  
-                               'day_cost':DayCost,
-                               'month_cost':MonthCost,
+                               'day_cost':5,#DayCost,
+                               'month_cost':150,#MonthCost,
                                'yearscosts':Yearscosts,
                                'monthscosts':Monthscosts
                                })
