@@ -105,8 +105,8 @@ def index(request):
     else:
         cop = round(ThermalKWh / Elec, 3)
 
-    #(DayCost, DUsage) = calculate_day_cost(year, month, day)
-    #(MonthCost, MUsage) = calculate_month_cost(year, month)
+    (DayCost, DUsage) = calculate_day_cost(year, month, day)
+    (MonthCost, MUsage) = calculate_month_cost(year, month)
 
     return render_to_response('polls/index.html',
                               {'out':Out,  
@@ -115,8 +115,8 @@ def index(request):
                                'thermalgj':ThermalGJ,  
                                'thermalkwh':ThermalKWh, 
                                'cop':cop,
-                               'day_cost':5, #DayCost,
-                               'month_cost':150 #MonthCost
+                               'day_cost':DayCost,
+                               'month_cost':MonthCost
                                })
 
 def include(request):
@@ -143,16 +143,16 @@ def include(request):
     else:
         In = Ins[len(Ins) -1 ].Value
 
-    #(DayCost, DUsage) = calculate_day_cost(year, month, day)
-    #(MonthCost, MUsage) = calculate_month_cost(year, month)
+    (DayCost, DUsage) = calculate_day_cost(year, month, day)
+    (MonthCost, MUsage) = calculate_month_cost(year, month)
 
     (Yearscosts, Monthscosts) = calculate_costs()
 
     return render_to_response('polls/include.html',
                               {'out':Out,  
                                'in':In,  
-                               'day_cost':5,#DayCost,
-                               'month_cost':150,#MonthCost,
+                               'day_cost':DayCost,
+                               'month_cost':MonthCost,
                                'yearscosts':Yearscosts,
                                'monthscosts':Monthscosts
                                })
@@ -376,21 +376,24 @@ def handle_value(request):
     sec = 0
 
     measureDate = datetime(year,  month,  day,  hour,  min,  sec)
+    lastMeasures = LastMeasure.objects.filter(UnitOfMeasure = unitOfMeasure, 
+                                              Name = name)
+    fixedvalue = 0
+    if len(lastMeasures) > 0:
+        fixedvalue = lastMeasures[0].Value
+        lastMeasures[0].delete()
+
+    if value <= 0 and (name == "thermal" or name == "elec"):
+        value = fixedvalue 
 
     measure = Measure(Name = name,  
                       Value = value, 
                       MeasureDate = measureDate, 
                       UnitOfMeasure = unitOfMeasure)
-
     if value < -100:
         return render_to_response('polls/insert.html', {'measure':measure})
 
     measure.save()
-    lastMeasures = LastMeasure.objects.filter(UnitOfMeasure = unitOfMeasure, 
-                                             Name = name)
-    if len(lastMeasures) > 0:
-        lastMeasures[0].delete()
-
     lastMeasure = LastMeasure(Name = name,  
                               Value = value, 
                               MeasureDate = measureDate, 
