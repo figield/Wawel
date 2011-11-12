@@ -2,6 +2,7 @@ from polls.models import Measure
 from datetime import date, datetime
 from django.db.models import Q
 from configuration import * 
+from calculation import * 
 
 def generate_data_for_yearchart_temp_in_out(year):
     dict = {}
@@ -161,10 +162,11 @@ def generate_data_for_monthbarchart_energy(year, month):
 def generate_data_for_daychart_temp_in_out(year, month, day):
     data = {}
     x_labels = []
-    for measure in Measure.objects.filter(UnitOfMeasure = "C", 
-                                          MeasureDate__month = int(month),
-                                          MeasureDate__year = int(year), 
-                                          MeasureDate__day = int(day)).order_by('MeasureDate'):
+    for measure in Measure.objects.filter(
+        UnitOfMeasure = "C", 
+        MeasureDate__month = int(month),
+        MeasureDate__year = int(year), 
+        MeasureDate__day = int(day)).order_by('MeasureDate'):
         Date = measure.MeasureDate.strftime("%H:%M")
         if data.get(measure.Name)==None:
             data[measure.Name] = [measure.Value]            
@@ -177,21 +179,23 @@ def generate_data_for_daychart_temp_in_out(year, month, day):
     return (x_labels, data)
 
 def generate_data_for_daybarchart_energy(year, month, day):
-    dict = {}
     name = 'elec'
     name2 = 'thermal'
-    for measure in Measure.objects.filter(Name = name, 
-                                          MeasureDate__month = int(month),
-                                          MeasureDate__year = int(year), 
-                                          MeasureDate__day = int(day)).order_by('MeasureDate'):
+    dict = {}
+    for measure in Measure.objects.filter(
+        Name = name, 
+        MeasureDate__month = int(month),
+        MeasureDate__year = int(year), 
+        MeasureDate__day = int(day)).order_by('MeasureDate'):
         Time = measure.MeasureDate.strftime("%H:%M")
         dict[Time] = measure.Value
             
     dict2 = {}
-    for measure in Measure.objects.filter(Name = name2, 
-                                          MeasureDate__month = int(month),
-                                          MeasureDate__year = int(year), 
-                                          MeasureDate__day = int(day)).order_by('MeasureDate'):
+    for measure in Measure.objects.filter(
+        Name = name2, 
+        MeasureDate__month = int(month),
+        MeasureDate__year = int(year), 
+        MeasureDate__day = int(day)).order_by('MeasureDate'):
         Time = measure.MeasureDate.strftime("%H:%M")
         dict2[Time] = measure.Value
 
@@ -200,13 +204,43 @@ def generate_data_for_daybarchart_energy(year, month, day):
     x_labels.sort()
     data[name] = []
     data[name2] = []
-    # TODO: first previous value should be taken from previous day
+
     PrevVal = 0
     PrevVal2 = 0
-    for Time in x_labels:
-        PrevVal = dict.get(Time)
-        PrevVal2 = dict2.get(Time) * GJ
-        break
+
+    # The first timestamp should be taken from the previous day
+    prevDate = get_next_day(year, month, day, -1, 'elec')
+    if prevDate == False:
+        days = get_days_of_the_month(year, month)
+        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        days.reverse()
+        for idate in days:
+            if currentDate > idate:
+                prevDate = idate
+                break
+
+    if prevDate == False:
+        for Time in x_labels:
+            PrevVal = dict.get(Time)
+            PrevVal2 = dict2.get(Time) * GJ
+            break
+    else:
+        [prevYear, prevMonth, prevDay] = prevDate.split('/')
+        Prevmeasures = Measure.objects.filter(
+            Name = name, 
+            MeasureDate__month = int(prevMonth),
+            MeasureDate__year = int(prevYear), 
+            MeasureDate__day = int(prevDay)).order_by('MeasureDate')
+        if len(Prevmeasures) > 1:
+            PrevVal = Prevmeasures[len(Prevmeasures)-1].Value
+        Prevmeasures2 = Measure.objects.filter(
+            Name = name2, 
+            MeasureDate__month = int(prevMonth),
+            MeasureDate__year = int(prevYear), 
+            MeasureDate__day = int(prevDay)).order_by('MeasureDate')
+        if len(Prevmeasures2) > 1:
+            PrevVal2 = Prevmeasures2[len(Prevmeasures2)-1].Value * GJ
+
     for Time in x_labels:
         Val = dict.get(Time)
         Val2 = dict2.get(Time) * GJ

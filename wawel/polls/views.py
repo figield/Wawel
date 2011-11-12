@@ -179,7 +179,24 @@ def daytemp(request, year, month, day):
         data.append([x_label, TempOut, TempIn])
 
     nextDate = get_next_day(year, month, day, 1, IN)
+    if nextDate == False:
+        days = get_days_of_the_month(year, month)
+        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        for idate in days:
+            if currentDate < idate:
+                nextDate = idate
+                break
+
     prevDate = get_next_day(year, month, day, -1, IN)
+    if prevDate == False:
+        days = get_days_of_the_month(year, month)
+        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        days.reverse()
+        for idate in days:
+            if currentDate > idate:
+                prevDate = idate
+                break
+
     # TODO: Add back arrow to month
 
     return render_to_response('polls/daytemp.html', 
@@ -209,12 +226,7 @@ def monthtemp(request, year, month):
     for (x_label, TempOut, TempIn) in zip(x_labels, TempsOut, TempsIn):
         data.append([x_label, TempOut, TempIn])
 
-    days = []
-    for measure in Measure.objects.filter(MeasureDate__month = int(month),
-                                          MeasureDate__year = int(year)).order_by('MeasureDate'):
-        Date = measure.MeasureDate.strftime("%Y/%m/%d")
-        if Date not in days:
-            days.append(Date)
+    days = get_days_of_the_month(year, month)
 
     nextDate = get_next_month(year, month, 1, IN)
     prevDate = get_next_month(year, month, -1, IN)
@@ -246,7 +258,24 @@ def dayenergy(request, year, month, day):
         data.append([x_label, Elec, Thermal])
 
     nextDate = get_next_day(year, month, day, 1, 'elec')
+    if nextDate == False:
+        days = get_days_of_the_month(year, month)
+        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        for idate in days:
+            if currentDate < idate:
+                nextDate = idate
+                break
+
     prevDate = get_next_day(year, month, day, -1, 'elec')
+    if prevDate == False:
+        days = get_days_of_the_month(year, month)
+        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        days.reverse()
+        for idate in days:
+            if currentDate > idate:
+                prevDate = idate
+                break
+
     # TODO: Add back arrow to month
 
     return render_to_response('polls/dayenergy.html', 
@@ -275,13 +304,8 @@ def monthenergy(request, year, month):
     for (x_label, Elec, Thermal) in zip(x_labels, Elecs, Thermals):
         data.append([x_label, Elec, Thermal])
 
-    days = []
-    for measure in Measure.objects.filter(MeasureDate__month = int(month),
-                                          MeasureDate__year = int(year)).order_by('MeasureDate'):
-        Date = measure.MeasureDate.strftime("%Y/%m/%d")
-        if Date not in days:
-            days.append(Date)
-
+    days = get_days_of_the_month(year, month)
+    
     nextDate = get_next_month(year, month, 1, 'elec')
     prevDate = get_next_month(year, month, -1, 'elec')
 

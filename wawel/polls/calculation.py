@@ -130,6 +130,15 @@ def get_next_day(year, month, day, daydiff, name):
     else:
         return False
 
+def get_days_of_the_month(year, month):
+    days = []
+    for measure in Measure.objects.filter(MeasureDate__month = int(month),
+                                          MeasureDate__year = int(year)).order_by('MeasureDate'):
+        Date = measure.MeasureDate.strftime("%Y/%m/%d")
+        if Date not in days:
+            days.append(Date)
+    return days
+
 def get_next_month(year, month, monthdiff, name):
     if validate_date_ym(year, month):
         nextDate = datetime(int(year), int(month), 1) + relativedelta(months=monthdiff)
@@ -148,12 +157,14 @@ def get_next_month(year, month, monthdiff, name):
 
 # TODO: check int type 
 def validate_year(year):
+
     intyear = int(year)
     if intyear > 2010 and intyear < 2034:
         return True
     else:
         return False
 
+# TODO: check int type 
 def validate_month(month):
     intmonth = int(month)
     if intmonth > 0 and intmonth < 13:
@@ -162,7 +173,9 @@ def validate_month(month):
         return False
 
 # TODO: check range
+# TODO: check int type 
 def validate_day(day):
+
     intday = int(day)
     if intday > 0 and intday < 32:
         return True
