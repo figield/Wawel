@@ -124,7 +124,7 @@ def get_next_day(year, month, day, daydiff, name):
             MeasureDate__month = nextMonth,
             MeasureDate__day = nextDay)
         if len(nextMeasures) > 0:
-            return str(nextYear)+ "/" + str(nextMonth) + "/" + str(nextDay)
+            return nextDate.strftime("%Y/%m/%d")
         else:
             return False
     else:

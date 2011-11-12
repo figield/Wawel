@@ -181,7 +181,7 @@ def daytemp(request, year, month, day):
     nextDate = get_next_day(year, month, day, 1, IN)
     if nextDate == False:
         days = get_days_of_the_month(year, month)
-        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        currentDate = datetime(int(year), int(month), int(day)).strftime("%Y/%m/%d")
         for idate in days:
             if currentDate < idate:
                 nextDate = idate
@@ -189,8 +189,8 @@ def daytemp(request, year, month, day):
 
     prevDate = get_next_day(year, month, day, -1, IN)
     if prevDate == False:
-        days = get_days_of_the_month(year, month)
-        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        days = get_days_of_the_month(year, month)        
+        currentDate = datetime(int(year), int(month), int(day)).strftime("%Y/%m/%d")
         days.reverse()
         for idate in days:
             if currentDate > idate:
@@ -260,7 +260,7 @@ def dayenergy(request, year, month, day):
     nextDate = get_next_day(year, month, day, 1, 'elec')
     if nextDate == False:
         days = get_days_of_the_month(year, month)
-        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        currentDate = datetime(int(year), int(month), int(day)).strftime("%Y/%m/%d")
         for idate in days:
             if currentDate < idate:
                 nextDate = idate
@@ -269,7 +269,7 @@ def dayenergy(request, year, month, day):
     prevDate = get_next_day(year, month, day, -1, 'elec')
     if prevDate == False:
         days = get_days_of_the_month(year, month)
-        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        currentDate = datetime(int(year), int(month), int(day)).strftime("%Y/%m/%d")
         days.reverse()
         for idate in days:
             if currentDate > idate:

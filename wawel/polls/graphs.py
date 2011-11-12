@@ -212,7 +212,7 @@ def generate_data_for_daybarchart_energy(year, month, day):
     prevDate = get_next_day(year, month, day, -1, 'elec')
     if prevDate == False:
         days = get_days_of_the_month(year, month)
-        currentDate = str(year) + "/" + str(month) + "/" + str(day)
+        currentDate = datetime(int(year), int(month), int(day)).strftime("%Y/%m/%d")
         days.reverse()
         for idate in days:
             if currentDate > idate:
