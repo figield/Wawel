@@ -107,22 +107,16 @@ def calculate_day_cost(Year, Month, Day):
 
 def calculate_cost_for_prev_day(year, month, day):
     prevDate = datetime(year, month, day) + relativedelta(days=-1)
-    prevYear = prevDate.year
-    prevMonth = prevDate.month
-    prevDay = prevDate.day
-    return calculate_day_cost(prevYear, prevMonth, prevDay)
+    return calculate_day_cost(prevDate.year, prevDate.month, prevDate.day)
 
 def get_next_day(year, month, day, daydiff, name):
     if validate_date_ymd(year, month, day):
         nextDate = datetime(int(year), int(month), int(day)) + relativedelta(days=daydiff)
-        nextYear = nextDate.year
-        nextMonth = nextDate.month
-        nextDay = nextDate.day
         nextMeasures = Measure.objects.filter(
             Name = name,
-            MeasureDate__year = nextYear, 
-            MeasureDate__month = nextMonth,
-            MeasureDate__day = nextDay)
+            MeasureDate__year = nextDate.year, 
+            MeasureDate__month = nextDate.month,
+            MeasureDate__day = nextDate.day)
         if len(nextMeasures) > 0:
             return nextDate.strftime("%Y/%m/%d")
         else:
@@ -142,53 +136,46 @@ def get_days_of_the_month(year, month):
 def get_next_month(year, month, monthdiff, name):
     if validate_date_ym(year, month):
         nextDate = datetime(int(year), int(month), 1) + relativedelta(months=monthdiff)
-        nextYear = nextDate.year
-        nextMonth = nextDate.month
         nextMeasures = Measure.objects.filter(
             Name = name,
-            MeasureDate__year = nextYear, 
-            MeasureDate__month = nextMonth)
+            MeasureDate__year = nextDate.year, 
+            MeasureDate__month = nextDate.month)
         if len(nextMeasures) > 0:
-            return str(nextYear)+ "/" + str(nextMonth)
+            return nextDate.strftime("%Y/%m")
         else:
             return False
     else:
         return False
 
-# TODO: check int type 
 def validate_year(year):
-
-    intyear = int(year)
-    if intyear > 2010 and intyear < 2034:
-        return True
-    else:
+    try:
+        intyear = int(year)
+        if intyear > 2010 and intyear < 2034:
+            return True
+        else:
+            return False
+    except: 
         return False
 
-# TODO: check int type 
 def validate_month(month):
-    intmonth = int(month)
-    if intmonth > 0 and intmonth < 13:
-        return True
-    else:
+    try:
+        intmonth = int(month)
+        if intmonth > 0 and intmonth < 13:
+            return True
+        else:
+            return False
+    except: 
         return False
 
-# TODO: check range
-# TODO: check int type 
-def validate_day(day):
-
-    intday = int(day)
-    if intday > 0 and intday < 32:
+def validate_date(year, month, day):
+    try:
+        datetime(int(year), int(month), int(day))
         return True
-    else:
+    except: 
         return False
 
 def validate_date_ymd(y,m,d):
-    VY = validate_year(y)
-    VM = validate_month(m)
-    VD = validate_day(d)
-    return VY and VM and VD
+    return validate_date(y, m, d)
 
 def validate_date_ym(y,m):
-    VY = validate_year(y)
-    VM = validate_month(m)
-    return VY and VM
+    return validate_year(y) and validate_month(m)
