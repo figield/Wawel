@@ -197,8 +197,6 @@ def daytemp(request, year, month, day):
                 prevDate = idate
                 break
 
-    # TODO: Add back arrow to month
-
     return render_to_response('polls/daytemp.html', 
                               {'year':year,
                                'month':month,
@@ -276,8 +274,6 @@ def dayenergy(request, year, month, day):
                 prevDate = idate
                 break
 
-    # TODO: Add back arrow to month
-
     return render_to_response('polls/dayenergy.html', 
                               {'year':year,
                                'month':month,
@@ -338,6 +334,7 @@ def yearenergy(request, year):
         data.append([x_label, Elec, Thermal])
     return render_to_response('polls/yearenergy.html', 
                               {'months':months, 
+                               'year':year,
                                'data':data},
                               context_instance=RequestContext(request))
 
@@ -361,6 +358,7 @@ def yeartemp(request, year):
         data.append([x_label, TempOut, TempIn])
     return render_to_response('polls/yeartemp.html', 
                               {'months':months, 
+                               'year':year,
                                'data':data},
                               context_instance=RequestContext(request))
 

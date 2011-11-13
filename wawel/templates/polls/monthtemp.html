@@ -21,7 +21,7 @@
         chart.draw(data, 
                    {width: 750, 
                     height: 420, 
-                    title: 'Średnia temperatura w kolejnych dniach pomiarów',
+                    title: '',
                     hAxis: {title: 'Czas', 
                             titleTextStyle: {color: '#FF0000'}}});
       }
@@ -34,7 +34,7 @@
 
     <div class="art-PostMetadataHeader">
         <h2 class="art-PostHeader">
-         Pomiar temperatury w ciagu miesiąca
+         Średnia temperatura w kolejnych dniach miesiąca
         </h2>
     </div>
 
@@ -93,5 +93,14 @@
         </p>
       </div>
      
+      <div class="right">      
+        <p>            
+          <img src="/site_media/images/chart_bar.png" /> 
+          <a href="/monthenergy/{{year}}/{{month}}/">           
+            Wykres zużycia energii
+          </a>      
+        </p>
+      </div>
+
     </div>
 {% endblock %}

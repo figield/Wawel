@@ -22,7 +22,7 @@
         chart.draw(data, 
                    {width: 750, 
                     height: 420, 
-                    title: 'Średnia temperatura w kolejnych miesiącach pomiarów',
+                    title: '',
                     hAxis: {title: 'Czas', 
                             titleTextStyle: {color: '#FF0000'}}});
       }
@@ -35,7 +35,7 @@
 
     <div class="art-PostMetadataHeader">
         <h2 class="art-PostHeader">
-          Pomiar temperatury w ciagu roku
+          Średnia temperatura w kolejnych miesiącach w roku
         </h2>
     </div>
 
@@ -65,11 +65,19 @@
           {% else %}
         <p> Baza pomiarów jest pusta.</p>
         {% endif %}
-
         </p>
       </div>
-    </div>
-    
+
+      <div class="right">      
+        <p>            
+          <img src="/site_media/images/chart_bar.png" /> 
+          <a href="/yearenergy/{{year}}/">           
+            Wykres zużycia energii
+          </a>      
+        </p>
+      </div>
+
+    </div>    
 {% endblock %}
 
 

@@ -22,7 +22,7 @@
         chart.draw(data, 
                    {width: 750, 
                     height: 420, 
-                    title: 'Wykres energii elektrycznej oraz cieplnej w ciagu roku',
+                    title: '',
                     hAxis: {title: 'Miesiąc', 
                             titleTextStyle: {color: '#FF0000'}}});
       }
@@ -65,8 +65,17 @@
         {% endif %}
         </p>
       </div>
-    </div>
-    
+
+      <div class="right">      
+        <p>            
+          <img src="/site_media/images/chart_line.png" /> 
+          <a href="/yeartemp/{{year}}/">           
+            Wykres temperatury
+          </a>      
+        </p>
+      </div>
+
+    </div>    
 {% endblock %}
 
 

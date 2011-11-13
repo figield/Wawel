@@ -21,7 +21,7 @@
         chart.draw(data, 
                    {width: 750, 
                     height: 420, 
-                    title: 'Temperatura w kolejnych godzinach pomiarów',
+                    title: '',
                     hAxis: {title: 'Czas', 
                             titleTextStyle: {color: '#FF0000'}}});
       }
@@ -34,7 +34,7 @@
 
     <div class="art-PostMetadataHeader">
         <h2 class="art-PostHeader">
-         Pomiar temperatury w ciagu dnia
+         Temperatura w kolejnych godzinach pomiarów
         </h2>
     </div>
 
@@ -72,6 +72,23 @@
             </td>
           </tr>
         </table>
+
+      <div class="left">      
+        <p>
+          <a href="/monthtemp/{{year}}/{{month}}/">           
+            Wykres miesięczny
+          </a>      
+        </p>
+      </div>
+
+      <div class="right">      
+        <p>            
+          <img src="/site_media/images/chart_bar.png" /> 
+          <a href="/dayenergy/{{year}}/{{month}}/{{day}}/">           
+            Wykres zużycia energii
+          </a>      
+        </p>
+      </div>
 
     </div>
 {% endblock %}

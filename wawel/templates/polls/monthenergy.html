@@ -22,7 +22,7 @@
         chart.draw(data, 
                    {width: 750, 
                     height: 420, 
-                    title: 'Wykres energii elektrycznej oraz cieplnej w ciagu miesiąca',
+                    title: '',
                     hAxis: {title: 'Dzień', 
                             titleTextStyle: {color: '#FF0000'}}});
       }
@@ -93,5 +93,15 @@
         {% endif %}
         </p>
       </div>
+
+      <div class="right">      
+        <p>            
+          <img src="/site_media/images/chart_line.png" /> 
+          <a href="/monthtemp/{{year}}/{{month}}/">           
+            Wykres temperatury
+          </a>      
+        </p>
+      </div>
+
     </div>
 {% endblock %}

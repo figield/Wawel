@@ -22,7 +22,7 @@
         chart.draw(data, 
                    {width: 750, 
                     height: 420, 
-                    title: 'Wykres energii elektrycznej oraz cieplnej w ciagu dnia',
+                    title: '',
                     hAxis: {title: 'Godzina', 
                             titleTextStyle: {color: '#FF0000'}}});
       }
@@ -73,6 +73,23 @@
           </td>
         </tr>
       </table>
-      
+
+      <div class="left">      
+        <p>
+          <a href="/monthenergy/{{year}}/{{month}}/">           
+            Wykres miesięczny
+          </a>      
+        </p>
+      </div>
+
+      <div class="right">      
+        <p>            
+          <img src="/site_media/images/chart_line.png" /> 
+          <a href="/daytemp/{{year}}/{{month}}/{{day}}/">           
+            Wykres temperatury
+          </a>      
+        </p>
+      </div>
+
     </div>
 {% endblock %}
