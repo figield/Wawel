@@ -28,8 +28,8 @@ function toggleDiv(id,flagit) {
 <style type="text/css">
   #div1 {position:absolute; top: 100px; left: 4px; width:130px; visibility:hidden}
   #div2 {position:absolute; top: 320px; left: 4px; width:130px; visibility:hidden}
-  #div3 {position:absolute; top: 100px; right: 4px; width:130px; visibility:hidden}
-  #div4 {position:absolute; top: 240px; right: 4px; width:130px; visibility:hidden}
+  #div3 {position:absolute; top: 90px; right: 4px; width:130px; visibility:hidden}
+  #div4 {position:absolute; top: 220px; right: 4px; width:130px; visibility:hidden}
   #div5 {position:absolute; top: 350px; right: 4px; width:130px; visibility:hidden}
 
 </style>
@@ -85,23 +85,22 @@ function toggleDiv(id,flagit) {
           <img src="/site_media/images/blink.gif" />
         </div>
         
-        <div style="position: absolute; right: 15px; top: 50px; color: #fff;"
+        <div style="position: absolute; right: 15px; top: 40px; color: #fff;"
              onMouseOver="toggleDiv('div3',1)" onMouseOut="toggleDiv('div3',0)">
           Energia elektryczna:
           <div class="measure">{{elec}} kWh</div>
         </div>
         <div id="div3">
-          Ilość energii elektrycznej zużytej przez pompę ciepła
+          Ilość energii elektrycznej zużytej przez pompę ciepła w bieżącym miesiącu
         </div>
 
-        <div style="position: absolute; right: 15px; top: 160px; color: #fff;"
+        <div style="position: absolute; right: 15px; top: 170px; color: #fff;"
              onMouseOver="toggleDiv('div4',1)" onMouseOut="toggleDiv('div4',0)">
           Energia cieplna:
-          <div class="measure">{{thermalgj}} GJ </div>
           <div class="measure">{{thermalkwh}} kWh</div>
         </div>
         <div id="div4">
-          Ilość energii wytworzonej przez pompę ciepła
+          Ilość energii wytworzonej przez pompę ciepła w bieżącym miesiącu
         </div>        
 
         <div style="position: absolute; right: 15px; top: 300px; color: #fff;"
@@ -110,7 +109,7 @@ function toggleDiv(id,flagit) {
           <div class="measure">{{cop}}</div>
         </div>
         <div id="div5">
-          Iloraz (stosunek) ilości zużytej energii elektrycznej do uzyskanej energii cieplnej przez pompę ciepła
+          Iloraz ilości zużytej energii elektrycznej do uzyskanej energii cieplnej przez pompę ciepła w bieżącym miesiącu
         </div>        
          
       </div>
@@ -163,6 +162,3 @@ function toggleDiv(id,flagit) {
     </div>
 
 {% endblock %}
-
-
-    

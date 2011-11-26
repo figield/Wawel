@@ -54,6 +54,57 @@ def calculate_costs():
                                 round(MUsage * CostPerkWh, 2)))
     return (Yearscosts, Monthscosts)
 
+def calculate_thermal():
+    ydict = {}
+    mdict = {}
+    All = Measure.objects.filter(Name = 'thermal').order_by('MeasureDate')
+    for measure in All:
+
+        year = measure.MeasureDate.strftime("%Y")
+        YTuple = ydict.get(year)
+        if YTuple == None:
+            ydict[year] = (measure.Value, measure.Value)
+        else:
+            (Min, Max) = YTuple
+            if Min > measure.Value:
+                Min = measure.Value
+            if Max < measure.Value:
+                Max = measure.Value            
+            ydict[year] = (Min, Max)
+
+        month = measure.MeasureDate.strftime("%Y/%m")
+        MTuple = mdict.get(month)
+        if MTuple == None:
+            mdict[month] = (measure.Value, measure.Value)
+        else:
+            (MMin, MMax) = MTuple
+            if MMin > measure.Value:
+                MMin = measure.Value
+            if MMax < measure.Value:
+                MMax = measure.Value            
+            mdict[month] = (MMin, MMax)
+    
+    y_keys = ydict.keys()
+    y_keys.sort()
+    Yearscosts = []
+    for y_key in y_keys:
+        (YMin, YMax) = ydict.get(y_key)
+        YUsage = YMax - YMin
+        Yearscosts.append(Cost(y_key,
+                               round(YUsage * GJ, 3),
+                               0))
+    m_keys = mdict.keys()
+    m_keys.sort()
+    Monthscosts = []
+    for m_key in m_keys:
+        (MMin, MMax) = mdict.get(m_key)
+        MUsage = MMax - MMin
+        Monthscosts.append(Cost(m_key,
+                                round(MUsage * GJ, 3),
+                                0))
+    return (Yearscosts, Monthscosts)
+
+
 def calculate_month_cost(Year, Month):
     MElecMin = 0
     MElecMax = 0
@@ -75,6 +126,27 @@ def calculate_month_cost(Year, Month):
     MUsage = MElecMax - MElecMin
     MonthCost = round(MUsage * CostPerkWh, 2)
     return (MonthCost, MUsage)
+
+def calculate_month_thermal(Year, Month):
+    MThermalMin = 0
+    MThermalMax = 0
+    Thermals = Measure.objects.filter( UnitOfMeasure = "GJ", 
+                                    Name = "thermal",  
+                                    MeasureDate__year = Year,
+                                    MeasureDate__month = Month
+                                    ).order_by('MeasureDate')
+    for measure in Thermals:
+        if MThermalMax == 0:
+            MThermalMin = measure.Value
+            MThermalMax = measure.Value
+        else:
+            if MThermalMin > measure.Value:
+                MThermalMin = measure.Value
+            if MThermalMax < measure.Value:
+                MThermalMax = measure.Value
+
+    return MThermalMax - MThermalMin
+
 
 def calculate_cost_for_prev_month(year, month):
     prevDate = datetime(year, month, 1) + relativedelta(months=-1)

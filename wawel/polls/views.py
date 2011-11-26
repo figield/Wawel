@@ -8,6 +8,7 @@ from datetime import date, datetime
 from graphs import * 
 from calculation import * 
 from configuration import * 
+from customclasses import *
 import random
 
 # For Ajax requests in the include.html
@@ -82,37 +83,21 @@ def index(request):
     else:
         In = Ins[len(Ins) -1 ].Value
     
-    Elecs = LastMeasure.objects.filter( UnitOfMeasure = "kWh", 
-                                        Name = "elec",  
-                                        MeasureDate__year = year
-                                        ).order_by('MeasureDate')
-    if len(Elecs) == 0:
-        Elec = 0
-    else:
-        Elec = Elecs[len(Elecs) -1 ].Value
+    (DayCost, DUsage) = calculate_day_cost(year, month, day)
+    (MonthCost, MonthElecUsage) = calculate_month_cost(year, month)
+    MonthThermalUsage = calculate_month_thermal(year, month)
 
-    Thermals = LastMeasure.objects.filter( UnitOfMeasure = "GJ", 
-                                           Name = "thermal",  
-                                           MeasureDate__year = year
-                                           ).order_by('MeasureDate')
-    if len(Thermals) == 0:
-        ThermalGJ = 0
-    else:
-        ThermalGJ = Thermals[len(Thermals) -1 ].Value
-    ThermalKWh = round(ThermalGJ * GJ, 2) 
-    if Elec == 0:
+    if MonthElecUsage == 0:
         cop = 0
     else:
-        cop = round(ThermalKWh / Elec, 3)
+        cop = round(MonthThermalUsage * GJ / MonthElecUsage, 3)
 
-    (DayCost, DUsage) = calculate_day_cost(year, month, day)
-    (MonthCost, MUsage) = calculate_month_cost(year, month)
+    ThermalKWh = round(MonthThermalUsage * GJ, 3)
 
     return render_to_response('polls/index.html',
                               {'out':Out,  
                                'in':In,  
-                               'elec':Elec,  
-                               'thermalgj':ThermalGJ,  
+                               'elec':MonthElecUsage,  
                                'thermalkwh':ThermalKWh, 
                                'cop':cop,
                                'day_cost':DayCost,
@@ -430,10 +415,24 @@ def handle_value(request):
     return render_to_response('polls/insert.html', {'measure':measure})
 
 def costs(request):
-    (Yearscosts, Monthscosts) = calculate_costs()
+    (YearsCosts, MonthsCosts) = calculate_costs()
+    (YearsThermal, MonthsThermal) = calculate_thermal()
+    YearCalc = []
+    for (YearCosts, YearThermal) in zip(YearsCosts, YearsThermal):
+        YearCalc.append(Usage(YearCosts.period,
+                              YearCosts.usage,
+                              YearCosts.cost,
+                              YearThermal.usage))
+    MonthCalc = []
+    for (MonthCosts, MonthThermal) in zip(MonthsCosts, MonthsThermal):
+        MonthCalc.append(Usage(MonthCosts.period,
+                               MonthCosts.usage,
+                               MonthCosts.cost,
+                               MonthThermal.usage))
+
     return render_to_response('polls/costs.html', 
-                              {'yearscosts':Yearscosts,
-                               'monthscosts':Monthscosts})
+                              {'yearscosts':YearCalc,
+                               'monthscosts':MonthCalc})
 
 def contact(request):            
     return render_to_response('polls/contact.html', {})
