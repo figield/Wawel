@@ -11,4 +11,7 @@ class Usage:
         self.usage = usage
         self.cost = cost
         self.thermal = thermal
-        self.cop = round(thermal/usage, 3)
+        if usage == 0:
+            self.cop = 0
+        else:
+            self.cop = round(thermal/usage, 3)
