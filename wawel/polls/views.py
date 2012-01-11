@@ -145,6 +145,12 @@ def include(request):
 def photos(request):
     return render_to_response('polls/photos.html', {})
 
+def movie1(request):
+    return render_to_response('polls/movie1.html', {})
+
+def movie2(request):
+    return render_to_response('polls/movie2.html', {})
+
 def daytemp(request, year, month, day):
     if not validate_date_ymd(year, month, day):
         return HttpResponseRedirect('/') 
